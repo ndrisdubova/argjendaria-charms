@@ -798,6 +798,25 @@
   opacity: 0.7;
 }
 
+.admin-not-found {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+  padding: 100px 20px;
+  color: var(--cream-dim);
+}
+
+.admin-not-found h1 {
+  font-size: 2.4rem;
+  margin-top: 6px;
+}
+
+.admin-not-found .admin-settings-desc {
+  margin-bottom: 10px;
+}
+
 /* Modal / form */
 
 .admin-modal-backdrop {

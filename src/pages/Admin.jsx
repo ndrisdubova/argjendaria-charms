@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, Navigate, Route, Routes } from 'react-router-dom'
+import { Link, Route, Routes } from 'react-router-dom'
 import { LockKeyhole, UserRound, KeyRound, ArrowLeft } from 'lucide-react'
 import AdminLayout from './admin/AdminLayout'
 import AdminDashboard from './admin/AdminDashboard'
@@ -20,6 +20,7 @@ import AdminAnalyticsHistory from './admin/AdminAnalyticsHistory'
 import AdminAnnouncement from './admin/AdminAnnouncement'
 import AdminMaintenance from './admin/AdminMaintenance'
 import AdminSettings from './admin/AdminSettings'
+import AdminNotFound from './admin/AdminNotFound'
 import './Admin.css'
 
 const CREDENTIALS = { username: 'charms', password: '123123' }
@@ -122,7 +123,7 @@ function Admin() {
         <Route path="announcement" element={<AdminAnnouncement />} />
         <Route path="maintenance" element={<AdminMaintenance />} />
         <Route path="settings" element={<AdminSettings />} />
-        <Route path="*" element={<Navigate to="/admin" replace />} />
+        <Route path="*" element={<AdminNotFound />} />
       </Routes>
     </AdminLayout>
   )
