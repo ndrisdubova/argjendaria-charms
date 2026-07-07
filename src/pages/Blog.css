@@ -1,0 +1,121 @@
+.blog-page {
+  padding-top: 70px;
+}
+
+.blog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+}
+
+.blog-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--charcoal);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  overflow: hidden;
+  transition: transform 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
+}
+
+.blog-card:hover {
+  transform: translateY(-6px);
+  border-color: var(--line-strong);
+  box-shadow: 0 20px 40px -20px rgba(0, 0, 0, 0.6);
+}
+
+.blog-card-image {
+  aspect-ratio: 16 / 10;
+  border-bottom: 1px solid var(--line);
+  overflow: hidden;
+}
+
+.blog-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.blog-card-body {
+  padding: 24px 24px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.blog-card-meta {
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--cream-dim);
+}
+
+.blog-card-body h3 {
+  font-size: 1.35rem;
+  line-height: 1.3;
+}
+
+.blog-card-body p {
+  color: var(--cream-dim);
+  font-size: 0.92rem;
+}
+
+.blog-card-link {
+  margin-top: 6px;
+  color: var(--white);
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.blog-back-link {
+  display: block;
+  color: var(--cream-dim);
+  font-size: 0.85rem;
+  margin-bottom: 40px;
+  transition: color 0.25s ease;
+}
+
+.blog-back-link:hover {
+  color: var(--white);
+}
+
+.blog-post {
+  padding-top: 60px;
+}
+
+.blog-post-container {
+  max-width: 760px;
+}
+
+.blog-post h1 {
+  font-size: clamp(2rem, 4vw, 2.8rem);
+  margin: 14px 0 32px;
+}
+
+.blog-post-image {
+  aspect-ratio: 16 / 9;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  margin-bottom: 36px;
+}
+
+.blog-post-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.blog-post-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.blog-post-content p {
+  color: var(--cream-dim);
+  font-size: 1rem;
+  line-height: 1.8;
+  white-space: pre-wrap;
+}

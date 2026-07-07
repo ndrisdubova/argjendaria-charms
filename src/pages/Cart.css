@@ -1,0 +1,349 @@
+.cart-layout {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 48px;
+  align-items: start;
+}
+
+.cart-lines {
+  display: flex;
+  flex-direction: column;
+}
+
+.cart-line {
+  display: grid;
+  grid-template-columns: 72px 1fr auto auto auto;
+  align-items: center;
+  gap: 20px;
+  padding: 22px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.cart-line-image {
+  width: 72px;
+  height: 72px;
+  object-fit: cover;
+  border-radius: 4px;
+  border: 1px solid var(--line);
+}
+
+.cart-line-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.cart-line-name {
+  color: var(--white);
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+}
+
+.cart-line-material {
+  color: var(--cream-dim);
+  font-size: 0.78rem;
+}
+
+.cart-line-size {
+  color: var(--cream-dim);
+  font-size: 0.78rem;
+}
+
+.cart-line-price {
+  color: var(--cream-dim);
+  font-size: 0.78rem;
+}
+
+.cart-line-total {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  color: var(--white);
+  white-space: nowrap;
+}
+
+.cart-line-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: var(--cream-dim);
+  transition: color 0.25s ease;
+}
+
+.cart-line-remove:hover {
+  color: #e0876b;
+}
+
+.cart-summary {
+  position: sticky;
+  top: 24px;
+  background: var(--charcoal);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.cart-summary h3 {
+  font-size: 1.2rem;
+  margin-bottom: 4px;
+}
+
+.cart-summary-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 0.88rem;
+  color: var(--cream-dim);
+}
+
+.cart-summary-total {
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  color: var(--white);
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+}
+
+.cart-checkout-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: 6px;
+}
+
+.checkout-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.checkout-success-card {
+  align-items: center;
+  text-align: center;
+}
+
+.checkout-success-icon {
+  color: var(--white);
+}
+
+/* Order tracking */
+
+.orders-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.order-card {
+  background: var(--charcoal);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 26px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.order-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.order-card-head-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.order-card-id {
+  color: var(--white);
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+}
+
+.order-card-date {
+  color: var(--cream-dim);
+  font-size: 0.78rem;
+}
+
+.order-status-badge {
+  flex-shrink: 0;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border: 1px solid var(--line);
+}
+
+.order-status-confirmed {
+  color: #e0b56b;
+  border-color: rgba(224, 181, 107, 0.4);
+}
+
+.order-status-preparing {
+  color: #d4a6e0;
+  border-color: rgba(212, 166, 224, 0.4);
+}
+
+.order-status-delivering {
+  color: #7fb8e0;
+  border-color: rgba(127, 184, 224, 0.4);
+}
+
+.order-status-completed {
+  color: #7fc99b;
+  border-color: rgba(127, 201, 155, 0.4);
+}
+
+.order-progress {
+  display: flex;
+  align-items: flex-start;
+  padding: 6px 4px;
+}
+
+.order-progress-step {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+
+.order-progress-step::before {
+  content: '';
+  position: absolute;
+  top: 10px;
+  left: -50%;
+  width: 100%;
+  height: 1px;
+  background: var(--line);
+  z-index: 0;
+}
+
+.order-progress-step:first-child::before {
+  display: none;
+}
+
+.order-progress-step-done::before {
+  background: var(--white);
+}
+
+.order-progress-dot {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--charcoal);
+  color: var(--black);
+  transition: background 0.25s ease, border-color 0.25s ease;
+}
+
+.order-progress-step-done .order-progress-dot {
+  background: var(--white);
+  border-color: var(--white);
+}
+
+.order-progress-step-current .order-progress-dot {
+  border-color: var(--white);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.15);
+}
+
+.order-progress-label {
+  font-size: 0.68rem;
+  letter-spacing: 0.03em;
+  color: var(--cream-dim);
+  max-width: 90px;
+}
+
+.order-progress-step-current .order-progress-label {
+  color: var(--white);
+}
+
+.order-card-items {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.order-card-items li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 0.9rem;
+  color: var(--cream-dim);
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--line);
+}
+
+.order-card-items li:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.order-card-foot {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.order-card-address {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  color: var(--cream-dim);
+  font-size: 0.82rem;
+  max-width: 320px;
+}
+
+.order-card-total {
+  color: var(--white);
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  white-space: nowrap;
+}
+
+@media (max-width: 860px) {
+  .cart-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .cart-line {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .cart-line-info {
+    flex: 1;
+    min-width: 140px;
+  }
+
+  .cart-line-total {
+    margin-left: auto;
+  }
+
+  .checkout-form-row {
+    grid-template-columns: 1fr;
+  }
+}

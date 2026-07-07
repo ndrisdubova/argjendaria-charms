@@ -1,0 +1,94 @@
+.size-guide-page {
+  padding-top: 70px;
+}
+
+.size-guide-methods {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+  margin-bottom: 56px;
+}
+
+.size-guide-card {
+  padding: 32px;
+  background: var(--charcoal);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--white);
+}
+
+.size-guide-card h3 {
+  font-size: 1.25rem;
+  margin: 16px 0 18px;
+}
+
+.size-guide-card ol {
+  list-style: decimal;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.size-guide-card li {
+  color: var(--cream-dim);
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+.size-guide-chart-wrap {
+  overflow-x: auto;
+  margin-bottom: 56px;
+}
+
+.size-guide-chart {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--charcoal);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.size-guide-chart th,
+.size-guide-chart td {
+  text-align: left;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--line);
+}
+
+.size-guide-chart th {
+  color: var(--cream-dim);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 400;
+}
+
+.size-guide-chart td {
+  color: var(--cream);
+  font-size: 0.92rem;
+}
+
+.size-guide-chart tr:last-child td {
+  border-bottom: none;
+}
+
+.size-guide-chart tr:hover td {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.size-guide-cta {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 48px 20px;
+  border-top: 1px solid var(--line);
+}
+
+.size-guide-cta p {
+  color: var(--cream-dim);
+  max-width: 480px;
+}

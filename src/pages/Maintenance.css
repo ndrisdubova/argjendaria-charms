@@ -1,0 +1,40 @@
+.maintenance-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  background: var(--black);
+}
+
+.maintenance-card {
+  max-width: 480px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.maintenance-icon {
+  color: var(--cream-dim);
+  margin-bottom: 6px;
+}
+
+.maintenance-card h1 {
+  font-size: clamp(1.9rem, 4vw, 2.6rem);
+}
+
+.maintenance-card p {
+  color: var(--cream-dim);
+  line-height: 1.7;
+}
+
+.maintenance-contact {
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
+  margin-top: 8px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+  width: 100%;
+}

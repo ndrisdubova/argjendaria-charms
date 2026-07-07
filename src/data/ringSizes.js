@@ -1,0 +1,15 @@
+export const SIZE_CHART = [
+  { us: '4', diameter: '14.8', circumference: '46.5' },
+  { us: '4.5', diameter: '15.3', circumference: '48.0' },
+  { us: '5', diameter: '15.7', circumference: '49.3' },
+  { us: '5.5', diameter: '16.1', circumference: '50.6' },
+  { us: '6', diameter: '16.5', circumference: '51.9' },
+  { us: '6.5', diameter: '16.9', circumference: '53.1' },
+  { us: '7', diameter: '17.3', circumference: '54.4' },
+  { us: '7.5', diameter: '17.7', circumference: '55.7' },
+  { us: '8', diameter: '18.2', circumference: '57.0' },
+  { us: '8.5', diameter: '18.6', circumference: '58.3' },
+  { us: '9', diameter: '19.0', circumference: '59.5' },
+  { us: '9.5', diameter: '19.4', circumference: '60.8' },
+  { us: '10', diameter: '19.8', circumference: '62.1' },
+]
