@@ -1170,7 +1170,7 @@
   .admin-aside {
     position: sticky;
     top: 0;
-    z-index: 100;
+    z-index: 210;
     height: auto;
     overflow: visible;
     gap: 0;
@@ -1181,22 +1181,48 @@
     display: flex;
   }
 
-  .admin-mobile-menu {
-    display: block;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    max-height: 0;
-    overflow: hidden;
+  .admin-aside-top {
+    position: relative;
+    z-index: 210;
     background: var(--black);
-    border-bottom: 1px solid var(--line);
-    transition: max-height 0.35s ease;
+  }
+
+  .admin-mobile-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 190;
+    background: rgba(0, 0, 0, 0.55);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+
+  .admin-mobile-backdrop-open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .admin-mobile-menu {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 200;
+    width: min(300px, 82vw);
+    background: var(--black);
+    border-right: 1px solid var(--line);
+    box-shadow: 20px 0 40px -20px rgba(0, 0, 0, 0.6);
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    overflow-y: auto;
+    padding-top: 77px;
   }
 
   .admin-mobile-menu-open {
-    max-height: 80vh;
-    overflow-y: auto;
+    transform: translateX(0);
   }
 
   .admin-nav {
@@ -1210,6 +1236,7 @@
     align-items: stretch;
     gap: 12px;
     padding: 4px 12px 20px;
+    margin-top: auto;
   }
 }
 

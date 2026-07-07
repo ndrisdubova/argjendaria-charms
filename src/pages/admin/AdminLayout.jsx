@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
-import { LayoutDashboard, Gem, Receipt, History, MessagesSquare, PackageOpen, Newspaper, Star, Mail, PartyPopper, BarChart3, CalendarRange, Settings, ArrowLeft, LogOut, Users, Megaphone, ShieldAlert, Percent, Menu } from 'lucide-react'
+import { LayoutDashboard, Gem, Receipt, History, MessagesSquare, PackageOpen, Newspaper, Star, Mail, PartyPopper, BarChart3, CalendarRange, Settings, ArrowLeft, LogOut, Users, Megaphone, ShieldAlert, Percent, Menu, X } from 'lucide-react'
 import { useAdminTheme } from '../../hooks/useAdminTheme'
 import { useInquiries } from '../../hooks/useInquiries'
 
@@ -27,9 +27,15 @@ function AdminLayout({ children, onLogout }) {
             aria-expanded={menuOpen}
             onClick={() => setMenuOpen((v) => !v)}
           >
-            <Menu size={22} strokeWidth={1.75} />
+            {menuOpen ? <X size={22} strokeWidth={1.75} /> : <Menu size={22} strokeWidth={1.75} />}
           </button>
         </div>
+
+        <div
+          className={`admin-mobile-backdrop ${menuOpen ? 'admin-mobile-backdrop-open' : ''}`}
+          onClick={closeMenu}
+          aria-hidden="true"
+        />
 
         <div className={`admin-mobile-menu ${menuOpen ? 'admin-mobile-menu-open' : ''}`}>
           <nav className="admin-nav">
