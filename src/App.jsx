@@ -1,5 +1,5 @@
 import { Route, Routes, useLocation } from 'react-router-dom'
-import { useEffect } from 'react'
+import { Suspense, lazy, useEffect } from 'react'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import AnnouncementBar from './components/AnnouncementBar'
@@ -21,8 +21,9 @@ import Signup from './pages/Signup'
 import ForgotPassword from './pages/ForgotPassword'
 import Account from './pages/Account'
 import SizeGuide from './pages/SizeGuide'
-import Admin from './pages/Admin'
 import NotFound from './pages/NotFound'
+
+const Admin = lazy(() => import('./pages/Admin'))
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -69,7 +70,14 @@ function App() {
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/account" element={<Account />} />
           <Route path="/size-guide" element={<SizeGuide />} />
-          <Route path="/admin/*" element={<Admin />} />
+          <Route
+            path="/admin/*"
+            element={
+              <Suspense fallback={null}>
+                <Admin />
+              </Suspense>
+            }
+          />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
