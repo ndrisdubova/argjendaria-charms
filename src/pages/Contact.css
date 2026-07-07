@@ -59,7 +59,7 @@
   padding: 13px 16px;
   color: var(--cream);
   font-family: var(--font-body);
-  font-size: 0.95rem;
+  font-size: 16px;
   resize: vertical;
   transition: border-color 0.3s ease;
 }

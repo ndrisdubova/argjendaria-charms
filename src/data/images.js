@@ -1,8 +1,8 @@
-const unsplash = (id, w = 1600) =>
-  `https://images.unsplash.com/${id}?fm=jpg&q=80&w=${w}&auto=format&fit=crop`
+const unsplash = (id, w = 900) =>
+  `https://images.unsplash.com/${id}?fm=jpg&q=70&w=${w}&auto=format&fit=crop`
 
-export const hero = unsplash('photo-1692211813384-c673d6dad806', 2400)
-export const story = unsplash('photo-1754573433744-bf2b79d0eaf4', 1600)
+export const hero = unsplash('photo-1692211813384-c673d6dad806', 1920)
+export const story = unsplash('photo-1754573433744-bf2b79d0eaf4', 1200)
 
 export const categoryImages = {
   ring: unsplash('photo-1775652138507-17280f2a59a4'),

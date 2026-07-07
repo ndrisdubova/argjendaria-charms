@@ -131,6 +131,7 @@ function Checkout() {
 
     if (!buyNow) clearCart()
     setPlacedOrder(order)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   return (
