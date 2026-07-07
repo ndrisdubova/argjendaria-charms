@@ -110,7 +110,7 @@ function Home() {
           </div>
           <div className="story-copy">
             <span className="eyebrow">Our Story</span>
-            <h2>A Legacy Set in Gold</h2>
+            <h2>A Legacy Set in Silver</h2>
             <p>
               Founded on the belief that fine jewelry should feel personal, Charm's brings
               together traditional goldsmithing and modern design. Each collection is
