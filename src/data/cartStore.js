@@ -1,5 +1,6 @@
 import { supabase } from './supabaseClient'
 import { createBroadcaster } from './broadcast'
+import { dedupe } from './dedupe'
 
 const { notify, subscribe } = createBroadcaster('charms-cart-updated')
 export { subscribe }
@@ -18,9 +19,11 @@ async function findRow(customerId, productId, size) {
 
 export async function loadCartForCustomer(customerId) {
   if (!customerId) return []
-  const { data, error } = await supabase.from('cart_items').select('*').eq('customer_id', customerId)
-  if (error) throw error
-  return data.map(mapRow)
+  return dedupe(`cart:${customerId}`, async () => {
+    const { data, error } = await supabase.from('cart_items').select('*').eq('customer_id', customerId)
+    if (error) throw error
+    return data.map(mapRow)
+  })
 }
 
 export async function addToCart(customerId, productId, quantity, size = null) {

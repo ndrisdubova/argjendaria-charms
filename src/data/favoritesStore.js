@@ -1,14 +1,17 @@
 import { supabase } from './supabaseClient'
 import { createBroadcaster } from './broadcast'
+import { dedupe } from './dedupe'
 
 const { notify, subscribe } = createBroadcaster('charms-favorites-updated')
 export { subscribe }
 
 export async function loadFavoritesForCustomer(customerId) {
   if (!customerId) return []
-  const { data, error } = await supabase.from('favorites').select('product_id').eq('customer_id', customerId)
-  if (error) throw error
-  return data.map((row) => row.product_id)
+  return dedupe(`favorites:${customerId}`, async () => {
+    const { data, error } = await supabase.from('favorites').select('product_id').eq('customer_id', customerId)
+    if (error) throw error
+    return data.map((row) => row.product_id)
+  })
 }
 
 export async function addFavoriteForCustomer(customerId, productId) {
@@ -26,11 +29,13 @@ export async function removeFavoriteForCustomer(customerId, productId) {
 }
 
 export async function getFavoriteCounts() {
-  const { data, error } = await supabase.from('favorites').select('product_id')
-  if (error) throw error
-  const counts = {}
-  data.forEach((row) => {
-    counts[row.product_id] = (counts[row.product_id] || 0) + 1
+  return dedupe('favorite-counts', async () => {
+    const { data, error } = await supabase.from('favorites').select('product_id')
+    if (error) throw error
+    const counts = {}
+    data.forEach((row) => {
+      counts[row.product_id] = (counts[row.product_id] || 0) + 1
+    })
+    return counts
   })
-  return counts
 }

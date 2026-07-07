@@ -1,5 +1,6 @@
 import { supabase } from './supabaseClient'
 import { createBroadcaster } from './broadcast'
+import { dedupe } from './dedupe'
 
 const { notify, subscribe } = createBroadcaster('charms-holidays-updated')
 export { subscribe }
@@ -19,13 +20,15 @@ function defaultHolidays() {
 }
 
 export async function loadHolidays() {
-  const { data, error } = await supabase.from('holidays').select('*')
-  if (error) throw error
-  const map = defaultHolidays()
-  data.forEach((row) => {
-    map[row.key] = { enabled: row.enabled, productIds: row.product_ids || [] }
+  return dedupe('holidays', async () => {
+    const { data, error } = await supabase.from('holidays').select('*')
+    if (error) throw error
+    const map = defaultHolidays()
+    data.forEach((row) => {
+      map[row.key] = { enabled: row.enabled, productIds: row.product_ids || [] }
+    })
+    return map
   })
-  return map
 }
 
 export async function setHolidayEnabled(key, enabled) {

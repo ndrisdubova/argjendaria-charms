@@ -1,5 +1,6 @@
 import { supabase } from './supabaseClient'
 import { createBroadcaster } from './broadcast'
+import { dedupe } from './dedupe'
 
 const { notify, subscribe } = createBroadcaster('charms-inquiries-updated')
 export { subscribe }
@@ -20,9 +21,11 @@ function mapRow(row) {
 }
 
 export async function loadInquiries() {
-  const { data, error } = await supabase.from('inquiries').select('*').order('created_at')
-  if (error) throw error
-  return data.map(mapRow)
+  return dedupe('inquiries', async () => {
+    const { data, error } = await supabase.from('inquiries').select('*').order('created_at')
+    if (error) throw error
+    return data.map(mapRow)
+  })
 }
 
 export async function addInquiry(inquiry) {

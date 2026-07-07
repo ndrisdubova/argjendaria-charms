@@ -1,5 +1,6 @@
 import { supabase } from './supabaseClient'
 import { createBroadcaster } from './broadcast'
+import { dedupe } from './dedupe'
 
 const { notify, subscribe } = createBroadcaster('charms-newsletter-updated')
 export { subscribe }
@@ -9,9 +10,11 @@ function mapRow(row) {
 }
 
 export async function loadSubscribers() {
-  const { data, error } = await supabase.from('newsletter_subscribers').select('*').order('subscribed_at')
-  if (error) throw error
-  return data.map(mapRow)
+  return dedupe('newsletter', async () => {
+    const { data, error } = await supabase.from('newsletter_subscribers').select('*').order('subscribed_at')
+    if (error) throw error
+    return data.map(mapRow)
+  })
 }
 
 export async function addSubscriber(email) {

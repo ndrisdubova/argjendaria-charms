@@ -1,17 +1,20 @@
 import { supabase } from './supabaseClient'
 import { createBroadcaster } from './broadcast'
+import { dedupe } from './dedupe'
 
 const { notify, subscribe } = createBroadcaster('charms-discounts-updated')
 export { subscribe }
 
 export async function loadDiscounts() {
-  const { data, error } = await supabase.from('discounts').select('product_id, percent')
-  if (error) throw error
-  const map = {}
-  data.forEach((row) => {
-    map[row.product_id] = row.percent
+  return dedupe('discounts', async () => {
+    const { data, error } = await supabase.from('discounts').select('product_id, percent')
+    if (error) throw error
+    const map = {}
+    data.forEach((row) => {
+      map[row.product_id] = row.percent
+    })
+    return map
   })
-  return map
 }
 
 export async function setDiscount(productId, percent) {

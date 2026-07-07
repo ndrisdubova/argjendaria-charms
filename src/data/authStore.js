@@ -1,5 +1,6 @@
 import { supabase } from './supabaseClient'
 import { createBroadcaster } from './broadcast'
+import { dedupe } from './dedupe'
 
 const SESSION_KEY = 'charms_customer_session'
 const { notify, subscribe } = createBroadcaster('charms-auth-updated')
@@ -66,7 +67,9 @@ export async function changePassword(customerId, currentPassword, newPassword) {
 }
 
 export async function listCustomers() {
-  const { data, error } = await supabase.rpc('rpc_list_customers')
-  if (error) throw error
-  return data.map((row) => ({ id: row.id, name: row.name, email: row.email, createdAt: row.created_at }))
+  return dedupe('customers', async () => {
+    const { data, error } = await supabase.rpc('rpc_list_customers')
+    if (error) throw error
+    return data.map((row) => ({ id: row.id, name: row.name, email: row.email, createdAt: row.created_at }))
+  })
 }

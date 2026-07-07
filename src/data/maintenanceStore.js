@@ -1,5 +1,6 @@
 import { supabase } from './supabaseClient'
 import { createBroadcaster } from './broadcast'
+import { dedupe } from './dedupe'
 
 const { notify, subscribe } = createBroadcaster('charms-maintenance-updated')
 export { subscribe }
@@ -7,9 +8,11 @@ export { subscribe }
 const MAINTENANCE_CODE = 'charms2012'
 
 export async function loadMaintenance() {
-  const { data, error } = await supabase.from('maintenance').select('enabled').eq('id', 1).maybeSingle()
-  if (error) throw error
-  return data ? { enabled: data.enabled } : { enabled: false }
+  return dedupe('maintenance', async () => {
+    const { data, error } = await supabase.from('maintenance').select('enabled').eq('id', 1).maybeSingle()
+    if (error) throw error
+    return data ? { enabled: data.enabled } : { enabled: false }
+  })
 }
 
 export async function setMaintenanceEnabled(enabled) {

@@ -1,13 +1,16 @@
 import { supabase } from './supabaseClient'
 import { createBroadcaster } from './broadcast'
+import { dedupe } from './dedupe'
 
 const { notify, subscribe } = createBroadcaster('charms-announcement-updated')
 export { subscribe }
 
 export async function loadAnnouncement() {
-  const { data, error } = await supabase.from('announcement').select('enabled, text').eq('id', 1).maybeSingle()
-  if (error) throw error
-  return data ? { enabled: data.enabled, text: data.text } : { enabled: false, text: '' }
+  return dedupe('announcement', async () => {
+    const { data, error } = await supabase.from('announcement').select('enabled, text').eq('id', 1).maybeSingle()
+    if (error) throw error
+    return data ? { enabled: data.enabled, text: data.text } : { enabled: false, text: '' }
+  })
 }
 
 export async function saveAnnouncement(updates) {

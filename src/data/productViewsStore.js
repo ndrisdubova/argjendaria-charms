@@ -1,17 +1,20 @@
 import { supabase } from './supabaseClient'
 import { createBroadcaster } from './broadcast'
+import { dedupe } from './dedupe'
 
 const { notify, subscribe } = createBroadcaster('charms-product-views-updated')
 export { subscribe }
 
 export async function loadViews() {
-  const { data, error } = await supabase.from('product_views').select('product_id, count')
-  if (error) throw error
-  const map = {}
-  data.forEach((row) => {
-    map[row.product_id] = row.count
+  return dedupe('product-views', async () => {
+    const { data, error } = await supabase.from('product_views').select('product_id, count')
+    if (error) throw error
+    const map = {}
+    data.forEach((row) => {
+      map[row.product_id] = row.count
+    })
+    return map
   })
-  return map
 }
 
 export async function recordView(productId) {
