@@ -21,7 +21,7 @@ function ForgotPassword() {
     setError('')
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     if (!/^\S+@\S+\.\S+$/.test(form.email)) {
       setError('Please enter a valid email.')
@@ -36,13 +36,13 @@ function ForgotPassword() {
       return
     }
 
-    const result = resetPassword(form.email.trim(), form.password)
+    const result = await resetPassword(form.email.trim(), form.password)
     if (!result.ok) {
       setError(result.error)
       return
     }
     const favoriteToApply = searchParams.get('favorite')
-    if (favoriteToApply) addFavoriteForCustomer(result.customer.id, favoriteToApply)
+    if (favoriteToApply) await addFavoriteForCustomer(result.customer.id, favoriteToApply)
     navigate(searchParams.get('next') || '/account')
   }
 

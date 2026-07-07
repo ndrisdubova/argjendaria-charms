@@ -12,13 +12,13 @@ function Footer() {
 
   useEffect(() => () => timers.current.forEach(clearTimeout), [])
 
-  const handleSubscribe = (e) => {
+  const handleSubscribe = async (e) => {
     e.preventDefault()
     if (!/^\S+@\S+\.\S+$/.test(email)) {
       setStatus('invalid')
       return
     }
-    const result = addSubscriber(email)
+    const result = await addSubscriber(email)
     setStatus(result)
     if (result === 'ok') {
       setEmail('')

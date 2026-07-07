@@ -1,62 +1,58 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { loadOrders, saveOrders, subscribe, makeId, todayKey } from '../data/ordersStore'
-import { loadProducts, saveProducts } from '../data/productsStore'
-import { loadSales, saveSales, makeId as makeSaleId } from '../data/salesStore'
+import {
+  loadOrders,
+  insertOrderRow,
+  updateOrderStatus as updateOrderStatusApi,
+  deleteOrder as deleteOrderApi,
+  subscribe,
+} from '../data/ordersStore'
+import { loadProducts, updateProduct } from '../data/productsStore'
+import { addSale } from '../data/salesStore'
 
 export function useOrders() {
-  const [orders, setOrders] = useState(() => loadOrders())
+  const [orders, setOrders] = useState([])
 
-  useEffect(() => subscribe(() => setOrders(loadOrders())), [])
+  const refresh = useCallback(() => {
+    loadOrders().then(setOrders)
+  }, [])
 
-  const placeOrder = useCallback((orderData) => {
-    const now = new Date()
+  useEffect(() => {
+    refresh()
+    return subscribe(refresh)
+  }, [refresh])
+
+  const placeOrder = useCallback(async (orderData) => {
     const total = orderData.items.reduce((sum, i) => sum + i.price * i.quantity, 0)
-    const order = {
-      ...orderData,
-      id: makeId(),
-      status: 'confirmed',
-      createdAt: now.toISOString(),
-      day: todayKey(),
-      total,
-    }
-    saveOrders([...loadOrders(), order])
+    const order = await insertOrderRow({ ...orderData, total })
 
-    const products = loadProducts()
-    const updatedProducts = products.map((p) => {
-      const item = order.items.find((i) => i.productId === p.id)
-      if (!item) return p
-      const currentStock = Number.isFinite(p.stock) ? p.stock : 10
-      return { ...p, stock: Math.max(0, currentStock - item.quantity) }
-    })
-    saveProducts(updatedProducts)
+    const products = await loadProducts()
+    await Promise.all(
+      order.items.map((item) => {
+        const product = products.find((p) => p.id === item.productId)
+        if (!product) return Promise.resolve()
+        const currentStock = Number.isFinite(product.stock) ? product.stock : 10
+        return updateProduct(item.productId, { stock: Math.max(0, currentStock - item.quantity) })
+      }),
+    )
 
-    const newSales = order.items.map((item) => ({
-      id: makeSaleId(),
-      productId: item.productId,
-      productName: item.productName,
-      grams: 0,
-      pricePerGram: 0,
-      price: item.price * item.quantity,
-      date: now.toISOString(),
-      day: order.day,
-      orderId: order.id,
-    }))
-    saveSales([...loadSales(), ...newSales])
+    await Promise.all(
+      order.items.map((item) =>
+        addSale({
+          productId: item.productId,
+          productName: item.productName,
+          grams: 0,
+          pricePerGram: 0,
+          price: item.price * item.quantity,
+          orderId: order.id,
+        }),
+      ),
+    )
 
     return order
   }, [])
 
-  const updateOrderStatus = useCallback((id, status) => {
-    const next = loadOrders().map((o) => (o.id === id ? { ...o, status } : o))
-    saveOrders(next)
-  }, [])
-
-  const deleteOrder = useCallback((id) => {
-    // Removes the order from the admin's view only. The customer's own order
-    // history and the sales/analytics records stay intact permanently.
-    const next = loadOrders().map((o) => (o.id === id ? { ...o, archived: true } : o))
-    saveOrders(next)
-  }, [])
+  const updateOrderStatus = useCallback((id, status) => updateOrderStatusApi(id, status), [])
+  const deleteOrder = useCallback((id) => deleteOrderApi(id), [])
 
   const activeOrders = useMemo(
     () => orders.filter((o) => o.status !== 'completed' && !o.archived).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)),

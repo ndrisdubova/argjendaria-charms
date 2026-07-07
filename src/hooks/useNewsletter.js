@@ -1,25 +1,20 @@
 import { useCallback, useEffect, useState } from 'react'
-import { loadSubscribers, saveSubscribers, subscribe, makeId } from '../data/newsletterStore'
+import { loadSubscribers, addSubscriber as addSubscriberApi, deleteSubscriber as deleteSubscriberApi, subscribe } from '../data/newsletterStore'
 
 export function useNewsletter() {
-  const [subscribers, setSubscribers] = useState(() => loadSubscribers())
+  const [subscribers, setSubscribers] = useState([])
 
-  useEffect(() => subscribe(() => setSubscribers(loadSubscribers())), [])
-
-  const addSubscriber = useCallback((email) => {
-    const current = loadSubscribers()
-    if (current.some((s) => s.email.toLowerCase() === email.toLowerCase())) {
-      return 'duplicate'
-    }
-    const next = [...current, { id: makeId(), email, subscribedAt: new Date().toISOString() }]
-    saveSubscribers(next)
-    return 'ok'
+  const refresh = useCallback(() => {
+    loadSubscribers().then(setSubscribers)
   }, [])
 
-  const deleteSubscriber = useCallback((id) => {
-    const next = loadSubscribers().filter((s) => s.id !== id)
-    saveSubscribers(next)
-  }, [])
+  useEffect(() => {
+    refresh()
+    return subscribe(refresh)
+  }, [refresh])
+
+  const addSubscriber = useCallback((email) => addSubscriberApi(email), [])
+  const deleteSubscriber = useCallback((id) => deleteSubscriberApi(id), [])
 
   return { subscribers, addSubscriber, deleteSubscriber }
 }

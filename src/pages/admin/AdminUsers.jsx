@@ -39,7 +39,6 @@ function AdminUsers() {
               <th>ID</th>
               <th>Name</th>
               <th>Email</th>
-              <th>Password</th>
             </tr>
           </thead>
           <tbody>
@@ -48,12 +47,11 @@ function AdminUsers() {
                 <td>{c.id}</td>
                 <td>{c.name}</td>
                 <td>{c.email}</td>
-                <td>{c.password}</td>
               </tr>
             ))}
             {filtered.length === 0 && (
               <tr>
-                <td colSpan={4} className="admin-table-empty">
+                <td colSpan={3} className="admin-table-empty">
                   {customers.length === 0 ? 'No users have signed up yet.' : 'No users match your search.'}
                 </td>
               </tr>

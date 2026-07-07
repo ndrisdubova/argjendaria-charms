@@ -1,27 +1,37 @@
 import { useCallback, useEffect, useState } from 'react'
-import { loadAllFavorites, saveAllFavorites, subscribe } from '../data/favoritesStore'
+import { loadFavoritesForCustomer, addFavoriteForCustomer, removeFavoriteForCustomer, subscribe } from '../data/favoritesStore'
 import { useAuth } from './useAuth'
 
 export function useFavorites() {
   const { currentUser } = useAuth()
-  const [allFavorites, setAllFavorites] = useState(() => loadAllFavorites())
+  const [favoriteIds, setFavoriteIds] = useState([])
 
-  useEffect(() => subscribe(() => setAllFavorites(loadAllFavorites())), [])
+  const refresh = useCallback(() => {
+    if (!currentUser) {
+      setFavoriteIds([])
+      return
+    }
+    loadFavoritesForCustomer(currentUser.id).then(setFavoriteIds)
+  }, [currentUser])
 
-  const favoriteIds = currentUser ? allFavorites[currentUser.id] || [] : []
+  useEffect(() => {
+    refresh()
+    return subscribe(refresh)
+  }, [refresh])
 
   const isFavorite = useCallback((id) => favoriteIds.includes(id), [favoriteIds])
 
   const toggleFavorite = useCallback(
-    (id) => {
+    async (id) => {
       if (!currentUser) return false
-      const all = loadAllFavorites()
-      const current = all[currentUser.id] || []
-      const next = current.includes(id) ? current.filter((f) => f !== id) : [...current, id]
-      saveAllFavorites({ ...all, [currentUser.id]: next })
+      if (favoriteIds.includes(id)) {
+        await removeFavoriteForCustomer(currentUser.id, id)
+      } else {
+        await addFavoriteForCustomer(currentUser.id, id)
+      }
       return true
     },
-    [currentUser],
+    [currentUser, favoriteIds],
   )
 
   return { favoriteIds, isFavorite, toggleFavorite, requiresLogin: !currentUser }

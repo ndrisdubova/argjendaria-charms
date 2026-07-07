@@ -1,26 +1,21 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { loadSales, saveSales, subscribe, makeId, todayKey } from '../data/salesStore'
+import { loadSales, addSale as addSaleApi, updateSale as updateSaleApi, deleteSale as deleteSaleApi, subscribe, todayKey } from '../data/salesStore'
 
 export function useSales() {
-  const [sales, setSales] = useState(() => loadSales())
+  const [sales, setSales] = useState([])
 
-  useEffect(() => subscribe(() => setSales(loadSales())), [])
-
-  const addSale = useCallback((sale) => {
-    const now = new Date()
-    const next = [...loadSales(), { ...sale, id: makeId(), date: now.toISOString(), day: todayKey() }]
-    saveSales(next)
+  const refresh = useCallback(() => {
+    loadSales().then(setSales)
   }, [])
 
-  const updateSale = useCallback((id, updates) => {
-    const next = loadSales().map((s) => (s.id === id ? { ...s, ...updates } : s))
-    saveSales(next)
-  }, [])
+  useEffect(() => {
+    refresh()
+    return subscribe(refresh)
+  }, [refresh])
 
-  const deleteSale = useCallback((id) => {
-    const next = loadSales().filter((s) => s.id !== id)
-    saveSales(next)
-  }, [])
+  const addSale = useCallback((sale) => addSaleApi(sale), [])
+  const updateSale = useCallback((id, updates) => updateSaleApi(id, updates), [])
+  const deleteSale = useCallback((id) => deleteSaleApi(id), [])
 
   const today = todayKey()
 

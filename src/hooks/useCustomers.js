@@ -1,10 +1,17 @@
-import { useEffect, useState } from 'react'
-import { loadCustomers, subscribe } from '../data/authStore'
+import { useCallback, useEffect, useState } from 'react'
+import { listCustomers, subscribe } from '../data/authStore'
 
 export function useCustomers() {
-  const [customers, setCustomers] = useState(() => loadCustomers())
+  const [customers, setCustomers] = useState([])
 
-  useEffect(() => subscribe(() => setCustomers(loadCustomers())), [])
+  const refresh = useCallback(() => {
+    listCustomers().then(setCustomers)
+  }, [])
+
+  useEffect(() => {
+    refresh()
+    return subscribe(refresh)
+  }, [refresh])
 
   return customers
 }

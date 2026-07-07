@@ -1,30 +1,31 @@
-const STORAGE_KEY = 'charms_newsletter'
-const EVENT_NAME = 'charms-newsletter-updated'
+import { supabase } from './supabaseClient'
+import { createBroadcaster } from './broadcast'
 
-export function loadSubscribers() {
-  const raw = localStorage.getItem(STORAGE_KEY)
-  if (!raw) return []
-  try {
-    return JSON.parse(raw)
-  } catch {
-    return []
+const { notify, subscribe } = createBroadcaster('charms-newsletter-updated')
+export { subscribe }
+
+function mapRow(row) {
+  return { id: row.id, email: row.email, subscribedAt: row.subscribed_at }
+}
+
+export async function loadSubscribers() {
+  const { data, error } = await supabase.from('newsletter_subscribers').select('*').order('subscribed_at')
+  if (error) throw error
+  return data.map(mapRow)
+}
+
+export async function addSubscriber(email) {
+  const { error } = await supabase.from('newsletter_subscribers').insert({ email })
+  if (error) {
+    if (error.code === '23505') return 'duplicate'
+    throw error
   }
+  notify()
+  return 'ok'
 }
 
-export function saveSubscribers(subscribers) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(subscribers))
-  window.dispatchEvent(new CustomEvent(EVENT_NAME))
-}
-
-export function subscribe(callback) {
-  window.addEventListener(EVENT_NAME, callback)
-  window.addEventListener('storage', callback)
-  return () => {
-    window.removeEventListener(EVENT_NAME, callback)
-    window.removeEventListener('storage', callback)
-  }
-}
-
-export function makeId() {
-  return `n${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`
+export async function deleteSubscriber(id) {
+  const { error } = await supabase.from('newsletter_subscribers').delete().eq('id', id)
+  if (error) throw error
+  notify()
 }

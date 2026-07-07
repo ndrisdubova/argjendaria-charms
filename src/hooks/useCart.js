@@ -1,61 +1,59 @@
 import { useCallback, useEffect, useState } from 'react'
-import { loadAllCarts, saveAllCarts, subscribe } from '../data/cartStore'
+import {
+  loadCartForCustomer,
+  addToCart as addToCartApi,
+  updateQuantity as updateQuantityApi,
+  removeFromCart as removeFromCartApi,
+  clearCart as clearCartApi,
+  subscribe,
+} from '../data/cartStore'
 import { useAuth } from './useAuth'
 
 export function useCart() {
   const { currentUser } = useAuth()
-  const [allCarts, setAllCarts] = useState(() => loadAllCarts())
+  const [items, setItems] = useState([])
 
-  useEffect(() => subscribe(() => setAllCarts(loadAllCarts())), [])
+  const refresh = useCallback(() => {
+    if (!currentUser) {
+      setItems([])
+      return
+    }
+    loadCartForCustomer(currentUser.id).then(setItems)
+  }, [currentUser])
 
-  const items = currentUser ? allCarts[currentUser.id] || [] : []
+  useEffect(() => {
+    refresh()
+    return subscribe(refresh)
+  }, [refresh])
 
   const addToCart = useCallback(
-    (productId, quantity = 1, size = null) => {
+    async (productId, quantity = 1, size = null) => {
       if (!currentUser) return false
-      const all = loadAllCarts()
-      const current = all[currentUser.id] || []
-      const idx = current.findIndex((i) => i.productId === productId && (i.size || null) === size)
-      const next =
-        idx >= 0
-          ? current.map((i, ix) => (ix === idx ? { ...i, quantity: i.quantity + quantity } : i))
-          : [...current, { productId, quantity, size }]
-      saveAllCarts({ ...all, [currentUser.id]: next })
+      await addToCartApi(currentUser.id, productId, quantity, size)
       return true
     },
     [currentUser],
   )
 
   const updateQuantity = useCallback(
-    (productId, size, quantity) => {
+    async (productId, size, quantity) => {
       if (!currentUser) return
-      const all = loadAllCarts()
-      const current = all[currentUser.id] || []
-      const matches = (i) => i.productId === productId && (i.size || null) === (size || null)
-      const next =
-        quantity <= 0
-          ? current.filter((i) => !matches(i))
-          : current.map((i) => (matches(i) ? { ...i, quantity } : i))
-      saveAllCarts({ ...all, [currentUser.id]: next })
+      await updateQuantityApi(currentUser.id, productId, size, quantity)
     },
     [currentUser],
   )
 
   const removeFromCart = useCallback(
-    (productId, size = null) => {
+    async (productId, size = null) => {
       if (!currentUser) return
-      const all = loadAllCarts()
-      const current = all[currentUser.id] || []
-      const next = current.filter((i) => !(i.productId === productId && (i.size || null) === (size || null)))
-      saveAllCarts({ ...all, [currentUser.id]: next })
+      await removeFromCartApi(currentUser.id, productId, size)
     },
     [currentUser],
   )
 
-  const clearCart = useCallback(() => {
+  const clearCart = useCallback(async () => {
     if (!currentUser) return
-    const all = loadAllCarts()
-    saveAllCarts({ ...all, [currentUser.id]: [] })
+    await clearCartApi(currentUser.id)
   }, [currentUser])
 
   const itemCount = items.reduce((sum, i) => sum + i.quantity, 0)

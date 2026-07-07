@@ -1,28 +1,34 @@
-const STORAGE_KEY = 'charms_discounts'
-const EVENT_NAME = 'charms-discounts-updated'
+import { supabase } from './supabaseClient'
+import { createBroadcaster } from './broadcast'
 
-export function loadDiscounts() {
-  const raw = localStorage.getItem(STORAGE_KEY)
-  if (!raw) return {}
-  try {
-    return JSON.parse(raw)
-  } catch {
-    return {}
-  }
+const { notify, subscribe } = createBroadcaster('charms-discounts-updated')
+export { subscribe }
+
+export async function loadDiscounts() {
+  const { data, error } = await supabase.from('discounts').select('product_id, percent')
+  if (error) throw error
+  const map = {}
+  data.forEach((row) => {
+    map[row.product_id] = row.percent
+  })
+  return map
 }
 
-export function saveDiscounts(discounts) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(discounts))
-  window.dispatchEvent(new CustomEvent(EVENT_NAME))
+export async function setDiscount(productId, percent) {
+  if (percent > 0) {
+    const { error } = await supabase.from('discounts').upsert({ product_id: productId, percent })
+    if (error) throw error
+  } else {
+    const { error } = await supabase.from('discounts').delete().eq('product_id', productId)
+    if (error) throw error
+  }
+  notify()
 }
 
-export function subscribe(callback) {
-  window.addEventListener(EVENT_NAME, callback)
-  window.addEventListener('storage', callback)
-  return () => {
-    window.removeEventListener(EVENT_NAME, callback)
-    window.removeEventListener('storage', callback)
-  }
+export async function removeDiscount(productId) {
+  const { error } = await supabase.from('discounts').delete().eq('product_id', productId)
+  if (error) throw error
+  notify()
 }
 
 export function getDiscountedPrice(price, percent) {

@@ -1,25 +1,21 @@
 import { useCallback, useEffect, useState } from 'react'
-import { loadReviews, saveReviews, subscribe, makeId } from '../data/reviewsStore'
+import { loadReviews, addReview as addReviewApi, updateReview as updateReviewApi, deleteReview as deleteReviewApi, subscribe } from '../data/reviewsStore'
 
 export function useReviews() {
-  const [reviews, setReviews] = useState(() => loadReviews())
+  const [reviews, setReviews] = useState([])
 
-  useEffect(() => subscribe(() => setReviews(loadReviews())), [])
-
-  const addReview = useCallback((review) => {
-    const next = [...loadReviews(), { ...review, id: makeId(), date: new Date().toISOString() }]
-    saveReviews(next)
+  const refresh = useCallback(() => {
+    loadReviews().then(setReviews)
   }, [])
 
-  const updateReview = useCallback((id, updates) => {
-    const next = loadReviews().map((r) => (r.id === id ? { ...r, ...updates } : r))
-    saveReviews(next)
-  }, [])
+  useEffect(() => {
+    refresh()
+    return subscribe(refresh)
+  }, [refresh])
 
-  const deleteReview = useCallback((id) => {
-    const next = loadReviews().filter((r) => r.id !== id)
-    saveReviews(next)
-  }, [])
+  const addReview = useCallback((review) => addReviewApi(review), [])
+  const updateReview = useCallback((id, updates) => updateReviewApi(id, updates), [])
+  const deleteReview = useCallback((id) => deleteReviewApi(id), [])
 
   return { reviews, addReview, updateReview, deleteReview }
 }

@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
 import {
-  loadCustomers,
   getSession,
   subscribe,
   signup as signupApi,
@@ -11,11 +10,9 @@ import {
 } from '../data/authStore'
 
 export function useAuth() {
-  const [sessionId, setSessionId] = useState(() => getSession())
+  const [currentUser, setCurrentUser] = useState(() => getSession())
 
-  useEffect(() => subscribe(() => setSessionId(getSession())), [])
-
-  const currentUser = sessionId ? loadCustomers().find((c) => c.id === sessionId) || null : null
+  useEffect(() => subscribe(() => setCurrentUser(getSession())), [])
 
   const signup = useCallback((data) => signupApi(data), [])
   const login = useCallback((email, password) => loginApi(email, password), [])

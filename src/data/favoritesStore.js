@@ -1,46 +1,36 @@
-const STORAGE_KEY = 'charms_favorites'
-const EVENT_NAME = 'charms-favorites-updated'
+import { supabase } from './supabaseClient'
+import { createBroadcaster } from './broadcast'
 
-export function loadAllFavorites() {
-  const raw = localStorage.getItem(STORAGE_KEY)
-  if (!raw) return {}
-  try {
-    const parsed = JSON.parse(raw)
-    return Array.isArray(parsed) ? {} : parsed
-  } catch {
-    return {}
-  }
+const { notify, subscribe } = createBroadcaster('charms-favorites-updated')
+export { subscribe }
+
+export async function loadFavoritesForCustomer(customerId) {
+  if (!customerId) return []
+  const { data, error } = await supabase.from('favorites').select('product_id').eq('customer_id', customerId)
+  if (error) throw error
+  return data.map((row) => row.product_id)
 }
 
-export function saveAllFavorites(map) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(map))
-  window.dispatchEvent(new CustomEvent(EVENT_NAME))
+export async function addFavoriteForCustomer(customerId, productId) {
+  const { error } = await supabase
+    .from('favorites')
+    .upsert({ customer_id: customerId, product_id: productId }, { onConflict: 'customer_id,product_id' })
+  if (error) throw error
+  notify()
 }
 
-export function subscribe(callback) {
-  window.addEventListener(EVENT_NAME, callback)
-  window.addEventListener('storage', callback)
-  return () => {
-    window.removeEventListener(EVENT_NAME, callback)
-    window.removeEventListener('storage', callback)
-  }
+export async function removeFavoriteForCustomer(customerId, productId) {
+  const { error } = await supabase.from('favorites').delete().eq('customer_id', customerId).eq('product_id', productId)
+  if (error) throw error
+  notify()
 }
 
-export function addFavoriteForCustomer(customerId, productId) {
-  const all = loadAllFavorites()
-  const current = all[customerId] || []
-  if (!current.includes(productId)) {
-    saveAllFavorites({ ...all, [customerId]: [...current, productId] })
-  }
-}
-
-export function getFavoriteCounts() {
-  const all = loadAllFavorites()
+export async function getFavoriteCounts() {
+  const { data, error } = await supabase.from('favorites').select('product_id')
+  if (error) throw error
   const counts = {}
-  Object.values(all).forEach((ids) => {
-    ids.forEach((id) => {
-      counts[id] = (counts[id] || 0) + 1
-    })
+  data.forEach((row) => {
+    counts[row.product_id] = (counts[row.product_id] || 0) + 1
   })
   return counts
 }

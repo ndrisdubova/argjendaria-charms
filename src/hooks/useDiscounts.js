@@ -1,26 +1,20 @@
 import { useCallback, useEffect, useState } from 'react'
-import { loadDiscounts, saveDiscounts, subscribe } from '../data/discountsStore'
+import { loadDiscounts, setDiscount as setDiscountApi, removeDiscount as removeDiscountApi, subscribe } from '../data/discountsStore'
 
 export function useDiscounts() {
-  const [discounts, setDiscounts] = useState(() => loadDiscounts())
+  const [discounts, setDiscounts] = useState({})
 
-  useEffect(() => subscribe(() => setDiscounts(loadDiscounts())), [])
-
-  const setDiscount = useCallback((productId, percent) => {
-    const next = { ...loadDiscounts() }
-    if (percent > 0) {
-      next[productId] = percent
-    } else {
-      delete next[productId]
-    }
-    saveDiscounts(next)
+  const refresh = useCallback(() => {
+    loadDiscounts().then(setDiscounts)
   }, [])
 
-  const removeDiscount = useCallback((productId) => {
-    const next = { ...loadDiscounts() }
-    delete next[productId]
-    saveDiscounts(next)
-  }, [])
+  useEffect(() => {
+    refresh()
+    return subscribe(refresh)
+  }, [refresh])
+
+  const setDiscount = useCallback((productId, percent) => setDiscountApi(productId, percent), [])
+  const removeDiscount = useCallback((productId) => removeDiscountApi(productId), [])
 
   return { discounts, setDiscount, removeDiscount }
 }

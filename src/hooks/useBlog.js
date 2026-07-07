@@ -1,25 +1,21 @@
 import { useCallback, useEffect, useState } from 'react'
-import { loadPosts, savePosts, subscribe, makeId } from '../data/blogStore'
+import { loadPosts, addPost as addPostApi, updatePost as updatePostApi, deletePost as deletePostApi, subscribe } from '../data/blogStore'
 
 export function useBlog() {
-  const [posts, setPosts] = useState(() => loadPosts())
+  const [posts, setPosts] = useState([])
 
-  useEffect(() => subscribe(() => setPosts(loadPosts())), [])
-
-  const addPost = useCallback((post) => {
-    const next = [...loadPosts(), { ...post, id: makeId(), date: new Date().toISOString() }]
-    savePosts(next)
+  const refresh = useCallback(() => {
+    loadPosts().then(setPosts)
   }, [])
 
-  const updatePost = useCallback((id, updates) => {
-    const next = loadPosts().map((p) => (p.id === id ? { ...p, ...updates } : p))
-    savePosts(next)
-  }, [])
+  useEffect(() => {
+    refresh()
+    return subscribe(refresh)
+  }, [refresh])
 
-  const deletePost = useCallback((id) => {
-    const next = loadPosts().filter((p) => p.id !== id)
-    savePosts(next)
-  }, [])
+  const addPost = useCallback((post) => addPostApi(post), [])
+  const updatePost = useCallback((id, updates) => updatePostApi(id, updates), [])
+  const deletePost = useCallback((id) => deletePostApi(id), [])
 
   return { posts, addPost, updatePost, deletePost }
 }

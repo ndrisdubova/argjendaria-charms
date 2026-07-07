@@ -1,30 +1,52 @@
-const STORAGE_KEY = 'charms_inquiries'
-const EVENT_NAME = 'charms-inquiries-updated'
+import { supabase } from './supabaseClient'
+import { createBroadcaster } from './broadcast'
 
-export function loadInquiries() {
-  const raw = localStorage.getItem(STORAGE_KEY)
-  if (!raw) return []
-  try {
-    return JSON.parse(raw)
-  } catch {
-    return []
+const { notify, subscribe } = createBroadcaster('charms-inquiries-updated')
+export { subscribe }
+
+function mapRow(row) {
+  return {
+    id: row.id,
+    type: row.type,
+    name: row.name,
+    email: row.email,
+    message: row.message,
+    productId: row.product_id || undefined,
+    productName: row.product_name || undefined,
+    size: row.size || undefined,
+    read: row.read,
+    createdAt: row.created_at,
   }
 }
 
-export function saveInquiries(inquiries) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(inquiries))
-  window.dispatchEvent(new CustomEvent(EVENT_NAME))
+export async function loadInquiries() {
+  const { data, error } = await supabase.from('inquiries').select('*').order('created_at')
+  if (error) throw error
+  return data.map(mapRow)
 }
 
-export function subscribe(callback) {
-  window.addEventListener(EVENT_NAME, callback)
-  window.addEventListener('storage', callback)
-  return () => {
-    window.removeEventListener(EVENT_NAME, callback)
-    window.removeEventListener('storage', callback)
-  }
+export async function addInquiry(inquiry) {
+  const { error } = await supabase.from('inquiries').insert({
+    type: inquiry.type,
+    name: inquiry.name,
+    email: inquiry.email,
+    message: inquiry.message,
+    product_id: inquiry.productId || null,
+    product_name: inquiry.productName || null,
+    size: inquiry.size || null,
+  })
+  if (error) throw error
+  notify()
 }
 
-export function makeId() {
-  return `i${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`
+export async function markRead(id) {
+  const { error } = await supabase.from('inquiries').update({ read: true }).eq('id', id)
+  if (error) throw error
+  notify()
+}
+
+export async function deleteInquiry(id) {
+  const { error } = await supabase.from('inquiries').delete().eq('id', id)
+  if (error) throw error
+  notify()
 }

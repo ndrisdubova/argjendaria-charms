@@ -1,26 +1,17 @@
-const KEY = 'charms_announcement'
-const EVENT_NAME = 'charms-announcement-updated'
+import { supabase } from './supabaseClient'
+import { createBroadcaster } from './broadcast'
 
-export function loadAnnouncement() {
-  const raw = localStorage.getItem(KEY)
-  if (!raw) return { enabled: false, text: '' }
-  try {
-    return { enabled: false, text: '', ...JSON.parse(raw) }
-  } catch {
-    return { enabled: false, text: '' }
-  }
+const { notify, subscribe } = createBroadcaster('charms-announcement-updated')
+export { subscribe }
+
+export async function loadAnnouncement() {
+  const { data, error } = await supabase.from('announcement').select('enabled, text').eq('id', 1).maybeSingle()
+  if (error) throw error
+  return data ? { enabled: data.enabled, text: data.text } : { enabled: false, text: '' }
 }
 
-export function saveAnnouncement(data) {
-  localStorage.setItem(KEY, JSON.stringify(data))
-  window.dispatchEvent(new CustomEvent(EVENT_NAME))
-}
-
-export function subscribe(callback) {
-  window.addEventListener(EVENT_NAME, callback)
-  window.addEventListener('storage', callback)
-  return () => {
-    window.removeEventListener(EVENT_NAME, callback)
-    window.removeEventListener('storage', callback)
-  }
+export async function saveAnnouncement(updates) {
+  const { error } = await supabase.from('announcement').update(updates).eq('id', 1)
+  if (error) throw error
+  notify()
 }

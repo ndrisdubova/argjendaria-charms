@@ -1,27 +1,69 @@
-const STORAGE_KEY = 'charms_cart'
-const EVENT_NAME = 'charms-cart-updated'
+import { supabase } from './supabaseClient'
+import { createBroadcaster } from './broadcast'
 
-export function loadAllCarts() {
-  const raw = localStorage.getItem(STORAGE_KEY)
-  if (!raw) return {}
-  try {
-    const parsed = JSON.parse(raw)
-    return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {}
-  } catch {
-    return {}
-  }
+const { notify, subscribe } = createBroadcaster('charms-cart-updated')
+export { subscribe }
+
+function mapRow(row) {
+  return { productId: row.product_id, quantity: row.quantity, size: row.size || null }
 }
 
-export function saveAllCarts(map) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(map))
-  window.dispatchEvent(new CustomEvent(EVENT_NAME))
+async function findRow(customerId, productId, size) {
+  let query = supabase.from('cart_items').select('id, quantity').eq('customer_id', customerId).eq('product_id', productId)
+  query = size ? query.eq('size', size) : query.is('size', null)
+  const { data, error } = await query.maybeSingle()
+  if (error) throw error
+  return data
 }
 
-export function subscribe(callback) {
-  window.addEventListener(EVENT_NAME, callback)
-  window.addEventListener('storage', callback)
-  return () => {
-    window.removeEventListener(EVENT_NAME, callback)
-    window.removeEventListener('storage', callback)
+export async function loadCartForCustomer(customerId) {
+  if (!customerId) return []
+  const { data, error } = await supabase.from('cart_items').select('*').eq('customer_id', customerId)
+  if (error) throw error
+  return data.map(mapRow)
+}
+
+export async function addToCart(customerId, productId, quantity, size = null) {
+  const existing = await findRow(customerId, productId, size)
+  if (existing) {
+    const { error } = await supabase
+      .from('cart_items')
+      .update({ quantity: existing.quantity + quantity, updated_at: new Date().toISOString() })
+      .eq('id', existing.id)
+    if (error) throw error
+  } else {
+    const { error } = await supabase.from('cart_items').insert({ customer_id: customerId, product_id: productId, quantity, size })
+    if (error) throw error
   }
+  notify()
+}
+
+export async function updateQuantity(customerId, productId, size, quantity) {
+  const existing = await findRow(customerId, productId, size)
+  if (!existing) return
+  if (quantity <= 0) {
+    const { error } = await supabase.from('cart_items').delete().eq('id', existing.id)
+    if (error) throw error
+  } else {
+    const { error } = await supabase
+      .from('cart_items')
+      .update({ quantity, updated_at: new Date().toISOString() })
+      .eq('id', existing.id)
+    if (error) throw error
+  }
+  notify()
+}
+
+export async function removeFromCart(customerId, productId, size = null) {
+  let query = supabase.from('cart_items').delete().eq('customer_id', customerId).eq('product_id', productId)
+  query = size ? query.eq('size', size) : query.is('size', null)
+  const { error } = await query
+  if (error) throw error
+  notify()
+}
+
+export async function clearCart(customerId) {
+  const { error } = await supabase.from('cart_items').delete().eq('customer_id', customerId)
+  if (error) throw error
+  notify()
 }

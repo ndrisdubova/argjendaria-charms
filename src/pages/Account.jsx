@@ -46,7 +46,7 @@ function Account() {
     navigate('/')
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     if (form.newPassword.length < 6) {
       setError('New password must be at least 6 characters.')
@@ -57,7 +57,7 @@ function Account() {
       return
     }
 
-    const result = changePassword(form.currentPassword, form.newPassword)
+    const result = await changePassword(form.currentPassword, form.newPassword)
     if (!result.ok) {
       setError(result.error)
       return

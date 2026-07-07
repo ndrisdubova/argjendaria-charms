@@ -1,35 +1,53 @@
-import defaultPosts from './blogPosts'
+import { supabase } from './supabaseClient'
+import { createBroadcaster } from './broadcast'
 
-const STORAGE_KEY = 'charms_blog_posts'
-const EVENT_NAME = 'charms-blog-updated'
+const { notify, subscribe } = createBroadcaster('charms-blog-updated')
+export { subscribe }
 
-export function loadPosts() {
-  const raw = localStorage.getItem(STORAGE_KEY)
-  if (!raw) {
-    savePosts(defaultPosts)
-    return defaultPosts
-  }
-  try {
-    return JSON.parse(raw)
-  } catch {
-    return defaultPosts
-  }
-}
-
-export function savePosts(posts) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(posts))
-  window.dispatchEvent(new CustomEvent(EVENT_NAME))
-}
-
-export function subscribe(callback) {
-  window.addEventListener(EVENT_NAME, callback)
-  window.addEventListener('storage', callback)
-  return () => {
-    window.removeEventListener(EVENT_NAME, callback)
-    window.removeEventListener('storage', callback)
+function mapRow(row) {
+  return {
+    id: row.id,
+    title: row.title,
+    excerpt: row.excerpt,
+    content: row.content,
+    image: row.image || undefined,
+    author: row.author,
+    date: row.created_at,
   }
 }
 
-export function makeId() {
-  return `b${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`
+export async function loadPosts() {
+  const { data, error } = await supabase.from('blog_posts').select('*').order('created_at')
+  if (error) throw error
+  return data.map(mapRow)
+}
+
+export async function addPost(post) {
+  const { error } = await supabase.from('blog_posts').insert({
+    title: post.title,
+    excerpt: post.excerpt,
+    content: post.content,
+    image: post.image || null,
+    author: post.author,
+  })
+  if (error) throw error
+  notify()
+}
+
+export async function updatePost(id, updates) {
+  const patch = {}
+  if (updates.title !== undefined) patch.title = updates.title
+  if (updates.excerpt !== undefined) patch.excerpt = updates.excerpt
+  if (updates.content !== undefined) patch.content = updates.content
+  if (updates.image !== undefined) patch.image = updates.image
+  if (updates.author !== undefined) patch.author = updates.author
+  const { error } = await supabase.from('blog_posts').update(patch).eq('id', id)
+  if (error) throw error
+  notify()
+}
+
+export async function deletePost(id) {
+  const { error } = await supabase.from('blog_posts').delete().eq('id', id)
+  if (error) throw error
+  notify()
 }

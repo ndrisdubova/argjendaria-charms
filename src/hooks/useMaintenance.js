@@ -1,10 +1,17 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { loadMaintenance, subscribe } from '../data/maintenanceStore'
 
 export function useMaintenance() {
-  const [maintenance, setMaintenance] = useState(() => loadMaintenance())
+  const [maintenance, setMaintenance] = useState({ enabled: false })
 
-  useEffect(() => subscribe(() => setMaintenance(loadMaintenance())), [])
+  const refresh = useCallback(() => {
+    loadMaintenance().then(setMaintenance)
+  }, [])
+
+  useEffect(() => {
+    refresh()
+    return subscribe(refresh)
+  }, [refresh])
 
   return maintenance
 }

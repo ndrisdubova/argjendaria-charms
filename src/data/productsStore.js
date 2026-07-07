@@ -1,37 +1,72 @@
-import defaultProducts from './products'
+import { supabase } from './supabaseClient'
+import { createBroadcaster } from './broadcast'
 
-const STORAGE_KEY = 'charms_products'
-const EVENT_NAME = 'charms-products-updated'
+const { notify, subscribe } = createBroadcaster('charms-products-updated')
+export { subscribe }
 
-export function loadProducts() {
-  const raw = localStorage.getItem(STORAGE_KEY)
-  if (!raw) {
-    saveProducts(defaultProducts)
-    return defaultProducts
+const FIELD_MAP = {
+  name: 'name',
+  category: 'category',
+  price: 'price',
+  offerPrice: 'offer_price',
+  material: 'material',
+  description: 'description',
+  featured: 'featured',
+  image: 'image',
+  gallery: 'gallery',
+  sizes: 'sizes',
+  stock: 'stock',
+}
+
+function toPatch(fields) {
+  const patch = {}
+  for (const [key, value] of Object.entries(fields)) {
+    const column = FIELD_MAP[key]
+    if (column) patch[column] = value
   }
-  try {
-    return JSON.parse(raw)
-  } catch {
-    return defaultProducts
+  return patch
+}
+
+function mapRow(row) {
+  return {
+    id: row.id,
+    name: row.name,
+    category: row.category,
+    price: Number(row.price),
+    offerPrice: row.offer_price != null ? Number(row.offer_price) : undefined,
+    material: row.material,
+    description: row.description,
+    featured: row.featured,
+    image: row.image || undefined,
+    gallery: row.gallery || [],
+    sizes: row.sizes || [],
+    stock: row.stock,
+    createdAt: row.created_at,
   }
 }
 
-export function saveProducts(products) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(products))
-  window.dispatchEvent(new CustomEvent(EVENT_NAME))
+export async function loadProducts() {
+  const { data, error } = await supabase.from('products').select('*').order('created_at')
+  if (error) throw error
+  return data.map(mapRow)
 }
 
-export function subscribe(callback) {
-  window.addEventListener(EVENT_NAME, callback)
-  window.addEventListener('storage', callback)
-  return () => {
-    window.removeEventListener(EVENT_NAME, callback)
-    window.removeEventListener('storage', callback)
-  }
+export async function addProduct(product) {
+  const { error } = await supabase.from('products').insert(toPatch(product))
+  if (error) throw error
+  notify()
 }
 
-export function makeId() {
-  return `p${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`
+export async function updateProduct(id, updates) {
+  const { error } = await supabase.from('products').update(toPatch(updates)).eq('id', id)
+  if (error) throw error
+  notify()
+}
+
+export async function deleteProduct(id) {
+  const { error } = await supabase.from('products').delete().eq('id', id)
+  if (error) throw error
+  notify()
 }
 
 export function getStock(product) {

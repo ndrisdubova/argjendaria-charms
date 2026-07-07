@@ -1,31 +1,39 @@
 import { useCallback, useEffect, useState } from 'react'
-import { loadHolidays, saveHolidays, subscribe, HOLIDAY_DEFS } from '../data/holidaysStore'
+import { loadHolidays, setHolidayEnabled, setHolidayProductIds, subscribe, HOLIDAY_DEFS } from '../data/holidaysStore'
 
 export function useHolidays() {
-  const [holidays, setHolidays] = useState(() => loadHolidays())
+  const [holidays, setHolidays] = useState({})
 
-  useEffect(() => subscribe(() => setHolidays(loadHolidays())), [])
-
-  const toggleHoliday = useCallback((key) => {
-    const current = loadHolidays()
-    saveHolidays({ ...current, [key]: { ...current[key], enabled: !current[key].enabled } })
+  const refresh = useCallback(() => {
+    loadHolidays().then(setHolidays)
   }, [])
 
-  const addProductToHoliday = useCallback((key, productId) => {
-    const current = loadHolidays()
-    const ids = current[key].productIds
-    if (!ids.includes(productId)) {
-      saveHolidays({ ...current, [key]: { ...current[key], productIds: [...ids, productId] } })
-    }
-  }, [])
+  useEffect(() => {
+    refresh()
+    return subscribe(refresh)
+  }, [refresh])
 
-  const removeProductFromHoliday = useCallback((key, productId) => {
-    const current = loadHolidays()
-    saveHolidays({
-      ...current,
-      [key]: { ...current[key], productIds: current[key].productIds.filter((id) => id !== productId) },
-    })
-  }, [])
+  const toggleHoliday = useCallback(
+    (key) => setHolidayEnabled(key, !holidays[key]?.enabled),
+    [holidays],
+  )
+
+  const addProductToHoliday = useCallback(
+    (key, productId) => {
+      const ids = holidays[key]?.productIds || []
+      if (ids.includes(productId)) return Promise.resolve()
+      return setHolidayProductIds(key, [...ids, productId])
+    },
+    [holidays],
+  )
+
+  const removeProductFromHoliday = useCallback(
+    (key, productId) => {
+      const ids = holidays[key]?.productIds || []
+      return setHolidayProductIds(key, ids.filter((id) => id !== productId))
+    },
+    [holidays],
+  )
 
   return { holidays, toggleHoliday, addProductToHoliday, removeProductFromHoliday, HOLIDAY_DEFS }
 }

@@ -1,97 +1,72 @@
-const USERS_KEY = 'charms_customers'
-const SESSION_KEY = 'charms_customer_session'
-const EVENT_NAME = 'charms-auth-updated'
+import { supabase } from './supabaseClient'
+import { createBroadcaster } from './broadcast'
 
-export function loadCustomers() {
-  const raw = localStorage.getItem(USERS_KEY)
-  if (!raw) return []
+const SESSION_KEY = 'charms_customer_session'
+const { notify, subscribe } = createBroadcaster('charms-auth-updated')
+export { subscribe }
+
+export function getSession() {
+  const raw = localStorage.getItem(SESSION_KEY)
+  if (!raw) return null
   try {
     return JSON.parse(raw)
   } catch {
-    return []
+    return null
   }
 }
 
-function saveCustomers(customers) {
-  localStorage.setItem(USERS_KEY, JSON.stringify(customers))
-}
-
-export function getSession() {
-  return localStorage.getItem(SESSION_KEY)
-}
-
-function setSession(customerId) {
-  if (customerId) {
-    localStorage.setItem(SESSION_KEY, customerId)
+function setSession(customer) {
+  if (customer) {
+    localStorage.setItem(SESSION_KEY, JSON.stringify(customer))
   } else {
     localStorage.removeItem(SESSION_KEY)
   }
-  window.dispatchEvent(new CustomEvent(EVENT_NAME))
+  notify()
 }
 
-export function subscribe(callback) {
-  window.addEventListener(EVENT_NAME, callback)
-  window.addEventListener('storage', callback)
-  return () => {
-    window.removeEventListener(EVENT_NAME, callback)
-    window.removeEventListener('storage', callback)
-  }
-}
-
-export function signup({ name, email, password }) {
-  const customers = loadCustomers()
-  if (customers.some((c) => c.email.toLowerCase() === email.toLowerCase())) {
-    return { ok: false, error: 'An account with this email already exists.' }
-  }
-  const customer = { id: makeId(), name, email, password }
-  saveCustomers([...customers, customer])
-  setSession(customer.id)
+export async function signup({ name, email, password }) {
+  const { data, error } = await supabase.rpc('rpc_signup', { p_name: name, p_email: email, p_password: password })
+  if (error) return { ok: false, error: error.message }
+  const customer = data[0]
+  setSession(customer)
   return { ok: true, customer }
 }
 
-export function login(email, password) {
-  const customers = loadCustomers()
-  const match = customers.find((c) => c.email.toLowerCase() === email.toLowerCase() && c.password === password)
-  if (!match) {
+export async function login(email, password) {
+  const { data, error } = await supabase.rpc('rpc_login', { p_email: email, p_password: password })
+  if (error) return { ok: false, error: error.message }
+  if (!data || data.length === 0) {
     return { ok: false, error: 'Incorrect email or password.' }
   }
-  setSession(match.id)
-  return { ok: true, customer: match }
+  const customer = data[0]
+  setSession(customer)
+  return { ok: true, customer }
 }
 
 export function logout() {
   setSession(null)
 }
 
-export function resetPassword(email, newPassword) {
-  const customers = loadCustomers()
-  const idx = customers.findIndex((c) => c.email.toLowerCase() === email.toLowerCase())
-  if (idx === -1) {
-    return { ok: false, error: 'No account found with that email.' }
-  }
-  const updated = { ...customers[idx], password: newPassword }
-  const next = [...customers]
-  next[idx] = updated
-  saveCustomers(next)
-  setSession(updated.id)
-  return { ok: true, customer: updated }
+export async function resetPassword(email, newPassword) {
+  const { data, error } = await supabase.rpc('rpc_reset_password', { p_email: email, p_new_password: newPassword })
+  if (error) return { ok: false, error: error.message }
+  const customer = data[0]
+  setSession(customer)
+  return { ok: true, customer }
 }
 
-export function changePassword(customerId, currentPassword, newPassword) {
-  const customers = loadCustomers()
-  const idx = customers.findIndex((c) => c.id === customerId)
-  if (idx === -1) {
-    return { ok: false, error: 'Account not found.' }
-  }
-  if (customers[idx].password !== currentPassword) {
-    return { ok: false, error: 'Current password is incorrect.' }
-  }
-  const next = [...customers]
-  next[idx] = { ...customers[idx], password: newPassword }
-  saveCustomers(next)
+export async function changePassword(customerId, currentPassword, newPassword) {
+  const { error } = await supabase.rpc('rpc_change_password', {
+    p_customer_id: customerId,
+    p_current_password: currentPassword,
+    p_new_password: newPassword,
+  })
+  if (error) return { ok: false, error: error.message }
   return { ok: true }
 }
 
-export function makeId() {
-  return `c${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`
+export async function listCustomers() {
+  const { data, error } = await supabase.rpc('rpc_list_customers')
+  if (error) throw error
+  return data.map((row) => ({ id: row.id, name: row.name, email: row.email, createdAt: row.created_at }))
 }

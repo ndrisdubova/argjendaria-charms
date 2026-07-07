@@ -113,13 +113,13 @@ function Checkout() {
     return next
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     const nextErrors = validate()
     setErrors(nextErrors)
     if (Object.keys(nextErrors).length > 0) return
 
-    const order = placeOrder({
+    const order = await placeOrder({
       customerId: currentUser.id,
       firstName: form.firstName.trim(),
       lastName: form.lastName.trim(),

@@ -1,28 +1,21 @@
 import { useCallback, useEffect, useState } from 'react'
-import { loadInquiries, saveInquiries, subscribe, makeId } from '../data/inquiriesStore'
+import { loadInquiries, addInquiry as addInquiryApi, markRead as markReadApi, deleteInquiry as deleteInquiryApi, subscribe } from '../data/inquiriesStore'
 
 export function useInquiries() {
-  const [inquiries, setInquiries] = useState(() => loadInquiries())
+  const [inquiries, setInquiries] = useState([])
 
-  useEffect(() => subscribe(() => setInquiries(loadInquiries())), [])
-
-  const addInquiry = useCallback((inquiry) => {
-    const next = [
-      ...loadInquiries(),
-      { ...inquiry, id: makeId(), createdAt: new Date().toISOString(), read: false },
-    ]
-    saveInquiries(next)
+  const refresh = useCallback(() => {
+    loadInquiries().then(setInquiries)
   }, [])
 
-  const markRead = useCallback((id) => {
-    const next = loadInquiries().map((i) => (i.id === id ? { ...i, read: true } : i))
-    saveInquiries(next)
-  }, [])
+  useEffect(() => {
+    refresh()
+    return subscribe(refresh)
+  }, [refresh])
 
-  const deleteInquiry = useCallback((id) => {
-    const next = loadInquiries().filter((i) => i.id !== id)
-    saveInquiries(next)
-  }, [])
+  const addInquiry = useCallback((inquiry) => addInquiryApi(inquiry), [])
+  const markRead = useCallback((id) => markReadApi(id), [])
+  const deleteInquiry = useCallback((id) => deleteInquiryApi(id), [])
 
   const unreadCount = inquiries.filter((i) => !i.read).length
 

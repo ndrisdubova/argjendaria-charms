@@ -1,5 +1,8 @@
-const STORAGE_KEY = 'charms_holidays'
-const EVENT_NAME = 'charms-holidays-updated'
+import { supabase } from './supabaseClient'
+import { createBroadcaster } from './broadcast'
+
+const { notify, subscribe } = createBroadcaster('charms-holidays-updated')
+export { subscribe }
 
 export const HOLIDAY_DEFS = [
   { key: 'valentines', label: "Valentine's Day" },
@@ -15,28 +18,24 @@ function defaultHolidays() {
   }, {})
 }
 
-export function loadHolidays() {
-  const raw = localStorage.getItem(STORAGE_KEY)
-  const defaults = defaultHolidays()
-  if (!raw) return defaults
-  try {
-    const parsed = JSON.parse(raw)
-    return { ...defaults, ...parsed }
-  } catch {
-    return defaults
-  }
+export async function loadHolidays() {
+  const { data, error } = await supabase.from('holidays').select('*')
+  if (error) throw error
+  const map = defaultHolidays()
+  data.forEach((row) => {
+    map[row.key] = { enabled: row.enabled, productIds: row.product_ids || [] }
+  })
+  return map
 }
 
-export function saveHolidays(holidays) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(holidays))
-  window.dispatchEvent(new CustomEvent(EVENT_NAME))
+export async function setHolidayEnabled(key, enabled) {
+  const { error } = await supabase.from('holidays').update({ enabled }).eq('key', key)
+  if (error) throw error
+  notify()
 }
 
-export function subscribe(callback) {
-  window.addEventListener(EVENT_NAME, callback)
-  window.addEventListener('storage', callback)
-  return () => {
-    window.removeEventListener(EVENT_NAME, callback)
-    window.removeEventListener('storage', callback)
-  }
+export async function setHolidayProductIds(key, productIds) {
+  const { error } = await supabase.from('holidays').update({ product_ids: productIds }).eq('key', key)
+  if (error) throw error
+  notify()
 }

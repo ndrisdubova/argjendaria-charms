@@ -1,31 +1,21 @@
-const STORAGE_KEY = 'charms_product_views'
-const EVENT_NAME = 'charms-product-views-updated'
+import { supabase } from './supabaseClient'
+import { createBroadcaster } from './broadcast'
 
-export function loadViews() {
-  const raw = localStorage.getItem(STORAGE_KEY)
-  if (!raw) return {}
-  try {
-    return JSON.parse(raw)
-  } catch {
-    return {}
-  }
+const { notify, subscribe } = createBroadcaster('charms-product-views-updated')
+export { subscribe }
+
+export async function loadViews() {
+  const { data, error } = await supabase.from('product_views').select('product_id, count')
+  if (error) throw error
+  const map = {}
+  data.forEach((row) => {
+    map[row.product_id] = row.count
+  })
+  return map
 }
 
-function saveViews(views) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(views))
-  window.dispatchEvent(new CustomEvent(EVENT_NAME))
-}
-
-export function recordView(productId) {
-  const views = loadViews()
-  saveViews({ ...views, [productId]: (views[productId] || 0) + 1 })
-}
-
-export function subscribe(callback) {
-  window.addEventListener(EVENT_NAME, callback)
-  window.addEventListener('storage', callback)
-  return () => {
-    window.removeEventListener(EVENT_NAME, callback)
-    window.removeEventListener('storage', callback)
-  }
+export async function recordView(productId) {
+  const { error } = await supabase.rpc('increment_product_view', { p_product_id: productId })
+  if (error) throw error
+  notify()
 }

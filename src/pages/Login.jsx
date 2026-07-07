@@ -19,15 +19,15 @@ function Login() {
     setError('')
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    const result = login(form.email.trim(), form.password)
+    const result = await login(form.email.trim(), form.password)
     if (!result.ok) {
       setError(result.error)
       return
     }
     const favoriteToApply = searchParams.get('favorite')
-    if (favoriteToApply) addFavoriteForCustomer(result.customer.id, favoriteToApply)
+    if (favoriteToApply) await addFavoriteForCustomer(result.customer.id, favoriteToApply)
     navigate(searchParams.get('next') || '/')
   }
 

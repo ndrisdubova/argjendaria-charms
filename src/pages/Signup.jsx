@@ -21,7 +21,7 @@ function Signup() {
     setError('')
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     if (!form.name.trim()) {
       setError('Please enter your name.')
@@ -40,13 +40,13 @@ function Signup() {
       return
     }
 
-    const result = signup({ name: form.name.trim(), email: form.email.trim(), password: form.password })
+    const result = await signup({ name: form.name.trim(), email: form.email.trim(), password: form.password })
     if (!result.ok) {
       setError(result.error)
       return
     }
     const favoriteToApply = searchParams.get('favorite')
-    if (favoriteToApply) addFavoriteForCustomer(result.customer.id, favoriteToApply)
+    if (favoriteToApply) await addFavoriteForCustomer(result.customer.id, favoriteToApply)
     navigate(searchParams.get('next') || '/')
   }
 

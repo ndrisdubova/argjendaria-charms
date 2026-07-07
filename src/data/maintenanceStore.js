@@ -1,29 +1,21 @@
-const KEY = 'charms_maintenance'
-const EVENT_NAME = 'charms-maintenance-updated'
+import { supabase } from './supabaseClient'
+import { createBroadcaster } from './broadcast'
+
+const { notify, subscribe } = createBroadcaster('charms-maintenance-updated')
+export { subscribe }
+
 const MAINTENANCE_CODE = 'charms2012'
 
-export function loadMaintenance() {
-  const raw = localStorage.getItem(KEY)
-  if (!raw) return { enabled: false }
-  try {
-    return { enabled: false, ...JSON.parse(raw) }
-  } catch {
-    return { enabled: false }
-  }
+export async function loadMaintenance() {
+  const { data, error } = await supabase.from('maintenance').select('enabled').eq('id', 1).maybeSingle()
+  if (error) throw error
+  return data ? { enabled: data.enabled } : { enabled: false }
 }
 
-export function setMaintenanceEnabled(enabled) {
-  localStorage.setItem(KEY, JSON.stringify({ enabled }))
-  window.dispatchEvent(new CustomEvent(EVENT_NAME))
-}
-
-export function subscribe(callback) {
-  window.addEventListener(EVENT_NAME, callback)
-  window.addEventListener('storage', callback)
-  return () => {
-    window.removeEventListener(EVENT_NAME, callback)
-    window.removeEventListener('storage', callback)
-  }
+export async function setMaintenanceEnabled(enabled) {
+  const { error } = await supabase.from('maintenance').update({ enabled }).eq('id', 1)
+  if (error) throw error
+  notify()
 }
 
 export function requireMaintenanceCode(action = 'change maintenance mode') {
