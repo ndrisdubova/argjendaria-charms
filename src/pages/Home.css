@@ -13,7 +13,8 @@
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(180deg, rgba(10, 10, 10, 0.55) 0%, rgba(10, 10, 10, 0.75) 55%, var(--black) 100%);
+    radial-gradient(ellipse 900px 500px at 50% 30%, rgba(201, 168, 118, 0.14), transparent 65%),
+    linear-gradient(180deg, rgba(10, 10, 10, 0.5) 0%, rgba(10, 10, 10, 0.78) 55%, var(--black) 100%);
   pointer-events: none;
 }
 
@@ -29,10 +30,68 @@
   padding-bottom: 40px;
 }
 
+.hero-inner > * {
+  animation: hero-rise 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.hero-inner > *:nth-child(2) {
+  animation-delay: 0.08s;
+}
+
+.hero-inner > *:nth-child(3) {
+  animation-delay: 0.16s;
+}
+
+.hero-inner > *:nth-child(4) {
+  animation-delay: 0.24s;
+}
+
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-inner > * {
+    animation: none;
+  }
+}
+
 .hero h1 {
   font-size: clamp(2.6rem, 6vw, 4.6rem);
   max-width: 900px;
   line-height: 1.1;
+  text-shadow: 0 2px 40px rgba(0, 0, 0, 0.3);
+}
+
+.hero-highlight {
+  background: linear-gradient(100deg, var(--gold-bright) 10%, var(--white) 45%, var(--gold-bright) 85%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: hero-shimmer 6s ease-in-out infinite;
+}
+
+@keyframes hero-shimmer {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-highlight {
+    animation: none;
+  }
 }
 
 .hero-text {
@@ -57,17 +116,73 @@
 }
 
 .story-visual {
+  position: relative;
   max-width: 340px;
+  margin: 0 40px 40px 0;
+}
+
+.story-photo-main {
+  position: relative;
   aspect-ratio: 4 / 5;
   border-radius: 4px;
   overflow: hidden;
   border: 1px solid var(--line);
+  box-shadow: 0 30px 60px -30px rgba(0, 0, 0, 0.7);
+}
+
+.story-photo-main::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 4px;
+  box-shadow: 0 0 0 1px var(--gold-dim);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+.story-visual:hover .story-photo-main::after {
+  opacity: 1;
 }
 
 .story-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.story-visual:hover .story-img {
+  transform: scale(1.05);
+}
+
+.story-photo-accent {
+  position: absolute;
+  right: -40px;
+  bottom: -40px;
+  width: 56%;
+  aspect-ratio: 1 / 1;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 4px solid var(--black);
+  box-shadow: 0 20px 44px -18px rgba(0, 0, 0, 0.85), 0 0 0 1px var(--gold-dim);
+  z-index: 2;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.story-photo-accent img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.story-visual:hover .story-photo-accent {
+  transform: translate(-8px, -8px);
+}
+
+.story-visual:hover .story-photo-accent img {
+  transform: scale(1.08);
 }
 
 .story-copy {
@@ -92,11 +207,13 @@
   border-bottom: 1px solid var(--line-strong);
   width: fit-content;
   padding-bottom: 4px;
-  transition: border-color 0.3s ease;
+  transition: border-color 0.3s ease, color 0.3s ease, letter-spacing 0.3s ease;
 }
 
 .story-link:hover {
-  border-color: var(--white);
+  color: var(--gold-bright);
+  border-color: var(--gold-bright);
+  letter-spacing: 0.14em;
 }
 
 .product-grid {
@@ -368,17 +485,46 @@
 
 .value-card {
   text-align: center;
-  padding: 10px 16px;
+  padding: 28px 20px;
+  border-radius: 8px;
+  transition: opacity 0.6s ease, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), background 0.35s ease;
+}
+
+.value-card:hover {
+  transform: translateY(-4px);
+  background: rgba(201, 168, 118, 0.05);
 }
 
 .value-mark {
-  display: inline-block;
-  width: 10px;
-  height: 10px;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  margin-bottom: 22px;
+  transition: transform 0.35s ease;
+}
+
+.value-mark::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--gold-dim);
   border-radius: 50%;
-  background: var(--white);
-  margin-bottom: 18px;
-  box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.12);
+}
+
+.value-mark::after {
+  content: '';
+  width: 9px;
+  height: 9px;
+  background: var(--gold-bright);
+  box-shadow: 0 0 12px 1px var(--gold-glow);
+  transform: rotate(45deg);
+}
+
+.value-card:hover .value-mark {
+  transform: scale(1.08);
 }
 
 .value-card h3 {
@@ -415,21 +561,41 @@
 }
 
 .testimonial-card {
+  position: relative;
   flex: 0 0 320px;
   scroll-snap-align: start;
   display: flex;
   flex-direction: column;
   gap: 16px;
-  padding: 32px;
+  padding: 36px 32px 32px;
   background: var(--charcoal);
   border: 1px solid var(--line);
   border-radius: 6px;
+  transition: opacity 0.6s ease, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.35s ease, box-shadow 0.35s ease;
+}
+
+.testimonial-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--gold-dim);
+  box-shadow: 0 24px 44px -24px rgba(0, 0, 0, 0.65);
+}
+
+.testimonial-card::before {
+  content: '\201C';
+  position: absolute;
+  top: 0;
+  right: 22px;
+  font-family: var(--font-display);
+  font-size: 4.2rem;
+  line-height: 1;
+  color: var(--gold-dim);
+  opacity: 0.5;
 }
 
 .testimonial-stars {
   display: flex;
   gap: 4px;
-  color: var(--white);
+  color: var(--gold-bright);
 }
 
 .testimonial-text {
@@ -446,9 +612,24 @@
 }
 
 .cta-banner {
+  position: relative;
   padding: 100px 0;
   text-align: center;
-  background: var(--black);
+  background:
+    radial-gradient(ellipse 700px 380px at 50% 0%, var(--gold-glow), transparent 70%),
+    var(--black);
+  border-top: 1px solid var(--line);
+}
+
+.cta-banner::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-bright), transparent);
 }
 
 .cta-banner-inner {
@@ -475,7 +656,14 @@
 
   .story-visual {
     max-width: 260px;
-    margin: 0 auto;
+    margin: 0 auto 32px;
+  }
+
+  .story-photo-accent {
+    right: -22px;
+    bottom: -22px;
+    width: 52%;
+    border-width: 3px;
   }
 
   .testimonial-card {

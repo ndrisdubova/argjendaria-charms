@@ -2,10 +2,11 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import { Star, Heart, TreePine, PartyPopper, Flower2 } from 'lucide-react'
 import ProductCard from '../components/ProductCard'
+import Reveal from '../components/Reveal'
 import { useProducts } from '../hooks/useProducts'
 import { useReviews } from '../hooks/useReviews'
 import { useHolidays } from '../hooks/useHolidays'
-import { hero, story } from '../data/images'
+import { hero, story, categoryImages } from '../data/images'
 import './Home.css'
 
 const HOLIDAY_META = {
@@ -57,7 +58,7 @@ function Home() {
         <div className="hero-overlay" aria-hidden="true" />
         <div className="container hero-inner">
           <span className="eyebrow">Est. Fine Jewelry House</span>
-          <h1>Timeless Elegance, Crafted for You</h1>
+          <h1><span className="hero-highlight">Timeless Elegance</span>, Crafted for You</h1>
           <p className="hero-text">
             Charm's creates heirloom-quality rings, necklaces, earrings and bracelets —
             designed to be worn today and treasured for generations.
@@ -87,15 +88,17 @@ function Home() {
               <Icon className="holiday-deco-icon holiday-deco-watermark-2" fill="currentColor" strokeWidth={1} />
             </div>
             <div className="container">
-              <div className="section-head">
+              <Reveal as="div" direction="up" className="section-head">
                 <span className="holiday-badge"><Icon size={14} strokeWidth={1.75} fill="currentColor" /> {label}</span>
                 <h2>{meta.heading}</h2>
                 <p>{meta.blurb}</p>
                 <div className="holiday-divider"><Icon size={16} strokeWidth={1.5} fill="currentColor" /></div>
-              </div>
+              </Reveal>
               <div className="product-grid">
-                {holidayProducts.map((product) => (
-                  <ProductCard key={product.id} product={product} />
+                {holidayProducts.map((product, i) => (
+                  <Reveal as="div" direction="up" delay={(i % 4) * 90} key={product.id}>
+                    <ProductCard product={product} />
+                  </Reveal>
                 ))}
               </div>
             </div>
@@ -105,10 +108,15 @@ function Home() {
 
       <section className="section story">
         <div className="container story-grid">
-          <div className="story-visual">
-            <img src={story} alt="Charm's atelier display" className="story-img" loading="lazy" />
-          </div>
-          <div className="story-copy">
+          <Reveal as="div" direction="left" className="story-visual">
+            <div className="story-photo-main">
+              <img src={story} alt="Charm's atelier display" className="story-img" loading="lazy" />
+            </div>
+            <div className="story-photo-accent">
+              <img src={categoryImages.ring} alt="Handcrafted ring detail" loading="lazy" />
+            </div>
+          </Reveal>
+          <Reveal as="div" direction="right" className="story-copy">
             <span className="eyebrow">Our Story</span>
             <h2>A Legacy Set in Silver</h2>
             <p>
@@ -121,20 +129,22 @@ function Home() {
               because beauty should never come at a cost to the world it's worn in.
             </p>
             <Link to="/products" className="story-link">View our collection &rarr;</Link>
-          </div>
+          </Reveal>
         </div>
       </section>
 
       <section className="section featured">
         <div className="container">
-          <div className="section-head">
+          <Reveal as="div" direction="up" className="section-head">
             <span className="eyebrow">Signature Pieces</span>
             <h2>Featured Collection</h2>
             <p>A curated edit of our most coveted designs, in gold, diamond and gemstone.</p>
-          </div>
+          </Reveal>
           <div className="product-grid">
-            {featured.map((product) => (
-              <ProductCard key={product.id} product={product} />
+            {featured.map((product, i) => (
+              <Reveal as="div" direction="up" delay={(i % 4) * 90} key={product.id}>
+                <ProductCard product={product} />
+              </Reveal>
             ))}
           </div>
           <div className="featured-cta">
@@ -145,17 +155,17 @@ function Home() {
 
       <section className="section-tight values">
         <div className="container">
-          <div className="section-head">
+          <Reveal as="div" direction="up" className="section-head">
             <span className="eyebrow">Why Charm's</span>
             <h2>Crafted With Care</h2>
-          </div>
+          </Reveal>
           <div className="values-grid">
-            {VALUES.map((v) => (
-              <div className="value-card" key={v.title}>
+            {VALUES.map((v, i) => (
+              <Reveal as="div" direction="up" delay={i * 100} className="value-card" key={v.title}>
                 <span className="value-mark" />
                 <h3>{v.title}</h3>
                 <p>{v.text}</p>
-              </div>
+              </Reveal>
             ))}
           </div>
         </div>
@@ -164,13 +174,18 @@ function Home() {
       {reviews.length > 0 && (
         <section className="section-tight testimonials">
           <div className="container">
-            <div className="section-head">
+            <Reveal as="div" direction="up" className="section-head">
               <span className="eyebrow">Client Stories</span>
               <h2>What Our Clients Say</h2>
-            </div>
+            </Reveal>
             <div className="testimonials-grid">
-              {recentReviews.map((review) => (
-                <div className="testimonial-card" key={review.id}>
+              {recentReviews.map((review, i) => (
+                <Reveal
+                  as="div"
+                  direction={i % 2 === 0 ? 'left' : 'right'}
+                  className="testimonial-card"
+                  key={review.id}
+                >
                   <div className="testimonial-stars">
                     {Array.from({ length: 5 }).map((_, i) => (
                       <Star
@@ -183,7 +198,7 @@ function Home() {
                   </div>
                   <p className="testimonial-text">"{review.text}"</p>
                   <span className="testimonial-name">{review.name}</span>
-                </div>
+                </Reveal>
               ))}
             </div>
           </div>
@@ -191,11 +206,11 @@ function Home() {
       )}
 
       <section className="cta-banner">
-        <div className="container cta-banner-inner">
+        <Reveal as="div" direction="up" className="container cta-banner-inner">
           <h2>Find the Piece That Tells Your Story.</h2>
           <p>Visit our atelier or reach out for a private, one-on-one styling session.</p>
           <Link to="/contact" className="btn btn-solid">Get in Touch</Link>
-        </div>
+        </Reveal>
       </section>
     </>
   )

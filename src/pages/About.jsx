@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { Clock, Heart, Gem, Users } from 'lucide-react'
-import { story } from '../data/images'
+import { story, categoryImages } from '../data/images'
+import Reveal from '../components/Reveal'
 import '../pages/Home.css'
 import './About.css'
 
@@ -47,10 +48,15 @@ function About() {
 
       <section className="section story">
         <div className="container story-grid">
-          <div className="story-visual">
-            <img src={story} alt="Charm's atelier display" className="story-img" loading="lazy" />
-          </div>
-          <div className="story-copy">
+          <Reveal as="div" direction="left" className="story-visual">
+            <div className="story-photo-main">
+              <img src={story} alt="Charm's atelier display" className="story-img" loading="lazy" />
+            </div>
+            <div className="story-photo-accent">
+              <img src={categoryImages.ring} alt="Handcrafted ring detail" loading="lazy" />
+            </div>
+          </Reveal>
+          <Reveal as="div" direction="right" className="story-copy">
             <span className="eyebrow">Our Story</span>
             <h2>A Legacy Set in Gold</h2>
             <p>
@@ -64,7 +70,7 @@ function About() {
               trust is what we work every day to deserve.
             </p>
             <Link to="/products" className="story-link">View our collection &rarr;</Link>
-          </div>
+          </Reveal>
         </div>
       </section>
 
