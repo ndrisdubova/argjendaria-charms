@@ -21,7 +21,7 @@ const SORT_OPTIONS = [
 ]
 
 function Products() {
-  const { products } = useProducts()
+  const { products, loading, error } = useProducts()
   const [active, setActive] = useState('all')
   const [query, setQuery] = useState('')
   const [minPrice, setMinPrice] = useState('')
@@ -171,15 +171,17 @@ function Products() {
           {filtered.length} {filtered.length === 1 ? 'piece' : 'pieces'} found
         </p>
 
-        {filtered.length > 0 ? (
+        {error ? (
+          <p className="empty-state">Couldn't load the collection right now. Please refresh the page.</p>
+        ) : filtered.length > 0 ? (
           <div className="product-grid">
             {filtered.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
-        ) : (
+        ) : !loading ? (
           <p className="empty-state">No pieces match your filters. Try adjusting your search.</p>
-        )}
+        ) : null}
       </div>
     </section>
   )
