@@ -46,11 +46,18 @@ function mapRow(row) {
   }
 }
 
+let cachedProducts = null
+
+export function getCachedProducts() {
+  return cachedProducts
+}
+
 export async function loadProducts() {
   return dedupe('products', async () => {
     const { data, error } = await supabase.from('products').select('*').order('created_at')
     if (error) throw error
-    return data.map(mapRow)
+    cachedProducts = data.map(mapRow)
+    return cachedProducts
   })
 }
 

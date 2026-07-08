@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useState } from 'react'
-import { loadProducts, addProduct, updateProduct, deleteProduct, subscribe } from '../data/productsStore'
+import { loadProducts, addProduct, updateProduct, deleteProduct, subscribe, getCachedProducts } from '../data/productsStore'
 
 export function useProducts() {
-  const [products, setProducts] = useState([])
-  const [loading, setLoading] = useState(true)
+  const cached = getCachedProducts()
+  const [products, setProducts] = useState(cached || [])
+  const [loading, setLoading] = useState(cached === null)
   const [error, setError] = useState(null)
 
   const refresh = useCallback(() => {
