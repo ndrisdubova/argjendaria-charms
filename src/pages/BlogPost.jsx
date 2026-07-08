@@ -9,10 +9,10 @@ function formatDate(iso) {
 
 function BlogPost() {
   const { id } = useParams()
-  const { posts } = useBlog()
+  const { posts, loading } = useBlog()
   const post = posts.find((p) => p.id === id)
 
-  if (!post) return <NotFound />
+  if (!post) return loading ? null : <NotFound />
 
   return (
     <section className="section blog-post">

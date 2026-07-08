@@ -19,7 +19,7 @@ const INITIAL_FORM = { name: '', email: '', message: '' }
 
 function ProductDetail() {
   const { id } = useParams()
-  const { products } = useProducts()
+  const { products, loading: productsLoading } = useProducts()
   const { addInquiry } = useInquiries()
   const { isLoggedIn } = useAuth()
   const { isFavorite, toggleFavorite } = useFavorites()
@@ -57,7 +57,7 @@ function ProductDetail() {
 
   useEffect(() => () => timers.current.forEach(clearTimeout), [])
 
-  if (!product) return <NotFound />
+  if (!product) return productsLoading ? null : <NotFound />
 
   const hasSizes = product.category === 'ring' && product.sizes && product.sizes.length > 0
   const stock = getStock(product)

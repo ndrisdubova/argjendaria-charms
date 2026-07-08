@@ -3,9 +3,13 @@ import { loadProducts, addProduct, updateProduct, deleteProduct, subscribe } fro
 
 export function useProducts() {
   const [products, setProducts] = useState([])
+  const [loading, setLoading] = useState(true)
 
   const refresh = useCallback(() => {
-    loadProducts().then(setProducts)
+    loadProducts().then((data) => {
+      setProducts(data)
+      setLoading(false)
+    })
   }, [])
 
   useEffect(() => {
@@ -13,5 +17,5 @@ export function useProducts() {
     return subscribe(refresh)
   }, [refresh])
 
-  return { products, addProduct, updateProduct, deleteProduct }
+  return { products, loading, addProduct, updateProduct, deleteProduct }
 }

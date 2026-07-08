@@ -3,9 +3,13 @@ import { loadPosts, addPost as addPostApi, updatePost as updatePostApi, deletePo
 
 export function useBlog() {
   const [posts, setPosts] = useState([])
+  const [loading, setLoading] = useState(true)
 
   const refresh = useCallback(() => {
-    loadPosts().then(setPosts)
+    loadPosts().then((data) => {
+      setPosts(data)
+      setLoading(false)
+    })
   }, [])
 
   useEffect(() => {
@@ -17,5 +21,5 @@ export function useBlog() {
   const updatePost = useCallback((id, updates) => updatePostApi(id, updates), [])
   const deletePost = useCallback((id) => deletePostApi(id), [])
 
-  return { posts, addPost, updatePost, deletePost }
+  return { posts, loading, addPost, updatePost, deletePost }
 }
