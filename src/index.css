@@ -193,6 +193,13 @@ ul {
   font-size: 1.02rem;
 }
 
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 280px));
+  justify-content: center;
+  gap: 35px;
+}
+
 .divider {
   position: relative;
   width: 70px;

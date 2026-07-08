@@ -5,6 +5,7 @@ import { useAuth } from '../hooks/useAuth'
 import { useFavorites } from '../hooks/useFavorites'
 import './Contact.css'
 import './Auth.css'
+import './Products.css'
 
 const INITIAL_FORM = { currentPassword: '', newPassword: '', confirmPassword: '' }
 

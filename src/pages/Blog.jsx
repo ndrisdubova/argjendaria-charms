@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useBlog } from '../hooks/useBlog'
+import '../pages/Products.css'
 import './Blog.css'
 
 function formatDate(iso) {

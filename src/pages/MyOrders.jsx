@@ -3,6 +3,7 @@ import { Check, MapPin } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth'
 import { useOrders } from '../hooks/useOrders'
 import { ORDER_STATUSES, ORDER_STATUS_LABELS } from '../data/ordersStore'
+import './Auth.css'
 import './Products.css'
 import './Cart.css'
 

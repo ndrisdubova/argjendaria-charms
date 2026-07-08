@@ -21,6 +21,7 @@ import AdminAnnouncement from './admin/AdminAnnouncement'
 import AdminMaintenance from './admin/AdminMaintenance'
 import AdminSettings from './admin/AdminSettings'
 import AdminNotFound from './admin/AdminNotFound'
+import './Contact.css'
 import './Admin.css'
 
 const CREDENTIALS = { username: 'charms', password: '123123' }

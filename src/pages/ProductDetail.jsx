@@ -12,6 +12,7 @@ import { resolveProductImage } from '../data/images'
 import { getStock } from '../data/productsStore'
 import { getDiscountedPrice, formatDiscountedPrice } from '../data/discountsStore'
 import NotFound from './NotFound'
+import '../components/ProductCard.css'
 import '../pages/Contact.css'
 import './ProductDetail.css'
 

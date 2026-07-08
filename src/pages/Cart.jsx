@@ -5,6 +5,7 @@ import { useAuth } from '../hooks/useAuth'
 import { useProducts } from '../hooks/useProducts'
 import { resolveProductImage } from '../data/images'
 import { getStock } from '../data/productsStore'
+import '../components/ProductCard.css'
 import './Products.css'
 import './Cart.css'
 

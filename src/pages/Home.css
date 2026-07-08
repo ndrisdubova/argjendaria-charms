@@ -216,13 +216,6 @@
   letter-spacing: 0.14em;
 }
 
-.product-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 280px));
-  justify-content: center;
-  gap: 30px;
-}
-
 .featured-cta {
   display: flex;
   justify-content: center;
