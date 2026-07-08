@@ -1,7 +1,18 @@
 .footer {
+  position: relative;
   background: var(--charcoal);
   border-top: 1px solid var(--line);
   margin-top: auto;
+}
+
+.footer::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--gold-hairline);
 }
 
 .footer-inner {
@@ -44,7 +55,7 @@
 }
 
 .footer-newsletter:focus-within {
-  border-color: var(--line-strong);
+  border-color: var(--gold-dim);
 }
 
 .footer-newsletter input {
@@ -69,15 +80,16 @@
   justify-content: center;
   width: 34px;
   height: 34px;
-  background: var(--white);
+  background: linear-gradient(135deg, var(--gold-bright), var(--gold));
   color: var(--black);
   border: none;
   border-radius: 2px;
-  transition: opacity 0.25s ease;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .footer-newsletter button:hover {
-  opacity: 0.85;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px -8px var(--gold-dim);
 }
 
 .footer-newsletter-message {
@@ -203,7 +215,7 @@
 }
 
 .footer-col a:hover {
-  color: var(--white);
+  color: var(--gold-bright);
 }
 
 .footer-bottom {

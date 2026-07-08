@@ -7,10 +7,23 @@
   transition: background 0.4s ease, border-color 0.4s ease, backdrop-filter 0.4s ease;
 }
 
+.navbar::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1px;
+  background: var(--gold-hairline);
+  opacity: 0.6;
+  pointer-events: none;
+}
+
 .navbar-solid {
   background: rgba(11, 11, 13, 0.86);
   border-bottom: 1px solid var(--line);
   backdrop-filter: blur(10px);
+  box-shadow: 0 12px 30px -18px rgba(0, 0, 0, 0.8);
 }
 
 .navbar-inner {
@@ -26,6 +39,11 @@
   font-weight: 700;
   letter-spacing: 0.04em;
   color: var(--white);
+  transition: color 0.3s ease;
+}
+
+.brand:hover {
+  color: var(--gold-bright);
 }
 
 .nav-links {
@@ -51,7 +69,7 @@
   bottom: 0;
   width: 0;
   height: 1px;
-  background: var(--white);
+  background: var(--gold-bright);
   transition: width 0.3s ease;
 }
 

@@ -38,7 +38,7 @@
 }
 
 .products-search:focus-within {
-  border-color: var(--white);
+  border-color: var(--gold-dim);
   color: var(--cream);
 }
 
@@ -85,7 +85,7 @@
 
 .products-sort select:focus {
   outline: none;
-  border-color: var(--white);
+  border-color: var(--gold-dim);
 }
 
 .filter-bar {
@@ -116,6 +116,7 @@
   background: var(--white);
   border-color: var(--white);
   color: var(--black);
+  box-shadow: 0 6px 16px -8px var(--gold-dim);
 }
 
 .filter-btn-active:hover {
@@ -149,7 +150,7 @@
 
 .products-price-filter input:focus {
   outline: none;
-  border-color: var(--white);
+  border-color: var(--gold-dim);
 }
 
 .products-price-sep {

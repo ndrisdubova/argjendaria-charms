@@ -80,7 +80,7 @@
 
 .product-detail-thumb-active {
   opacity: 1;
-  border-color: var(--white);
+  border-color: var(--gold-bright);
 }
 
 .product-detail-info {
@@ -140,7 +140,7 @@
 .product-detail-price-offer {
   font-family: var(--font-display);
   font-size: 2.2rem;
-  color: var(--white);
+  color: var(--gold-bright);
 }
 
 .product-detail-price-original {
@@ -241,7 +241,7 @@
   left: 0;
   right: 0;
   height: 3px;
-  background: var(--white);
+  background: linear-gradient(90deg, var(--gold), var(--gold-bright), var(--gold));
 }
 
 .product-detail-inquiry-head {
