@@ -88,13 +88,16 @@ function ProductForm({ initial, onSave, onClose }) {
       setError('A main image is required.')
       return
     }
+    const pendingSize = sizeInput.trim()
+    const allSizes = pendingSize && !form.sizes.includes(pendingSize) ? [...form.sizes, pendingSize] : form.sizes
+
     onSave({
       ...form,
       price: Number(form.price),
       offerPrice: form.offerPrice ? Number(form.offerPrice) : undefined,
       stock: Math.max(0, Number(form.stock) || 0),
       gallery: form.gallery.filter(Boolean).slice(0, MAX_GALLERY),
-      sizes: form.category === 'ring' ? form.sizes : [],
+      sizes: form.category === 'ring' ? allSizes : [],
     })
   }
 
