@@ -289,3 +289,24 @@ select:focus-visible {
     transition: none;
   }
 }
+
+.route-crash {
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+.route-crash-inner {
+  text-align: center;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.route-crash-inner p {
+  color: var(--cream-dim);
+}
