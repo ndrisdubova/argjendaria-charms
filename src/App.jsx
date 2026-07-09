@@ -4,7 +4,10 @@ import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import AnnouncementBar from './components/AnnouncementBar'
 import RouteErrorBoundary from './components/RouteErrorBoundary'
+import ScrollProgress from './components/ScrollProgress'
+import BackToTop from './components/BackToTop'
 import { useMaintenance } from './hooks/useMaintenance'
+import { useButtonGlow } from './hooks/useButtonGlow'
 import Maintenance from './pages/Maintenance'
 
 const Home = lazy(() => import('./pages/Home'))
@@ -38,7 +41,9 @@ function ScrollToTop() {
 function App() {
   const { pathname } = useLocation()
   const isAdmin = pathname === '/admin' || pathname.startsWith('/admin/')
+  const hideBackToTop = pathname === '/contact' || pathname === '/login' || pathname === '/my-orders'
   const { enabled: maintenanceOn } = useMaintenance()
+  useButtonGlow()
 
   if (maintenanceOn && !isAdmin) {
     return (
@@ -52,6 +57,7 @@ function App() {
   return (
     <>
       <ScrollToTop />
+      {!isAdmin && <ScrollProgress />}
       {!isAdmin && <AnnouncementBar />}
       {!isAdmin && <Navbar />}
       <main>
@@ -81,6 +87,7 @@ function App() {
         </RouteErrorBoundary>
       </main>
       {!isAdmin && <Footer />}
+      {!isAdmin && !hideBackToTop && <BackToTop />}
     </>
   )
 }

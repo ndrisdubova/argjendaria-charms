@@ -41,14 +41,14 @@
   left: 14px;
   z-index: 2;
   padding: 6px 12px;
-  background: #c0392b;
+  background: linear-gradient(135deg, var(--wine-bright), var(--wine));
   border-radius: 999px;
   color: #ffffff;
   font-size: 0.7rem;
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  box-shadow: 0 6px 16px -6px rgba(192, 57, 43, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+  box-shadow: 0 6px 16px -6px var(--wine-glow), 0 0 0 1px rgba(255, 255, 255, 0.1) inset;
 }
 
 .product-favorite-btn {
@@ -61,7 +61,7 @@
   justify-content: center;
   width: 38px;
   height: 38px;
-  background: rgba(10, 10, 10, 0.55);
+  background: rgba(21, 16, 12, 0.55);
   backdrop-filter: blur(4px);
   border: 1px solid var(--line);
   border-radius: 50%;

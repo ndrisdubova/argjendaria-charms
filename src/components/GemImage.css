@@ -18,3 +18,31 @@
 .gem-image:hover img {
   transform: scale(1.07);
 }
+
+.gem-image::after {
+  content: '';
+  position: absolute;
+  inset: -60% -20%;
+  z-index: 1;
+  background: linear-gradient(
+    115deg,
+    transparent 40%,
+    rgba(255, 255, 255, 0.03) 46%,
+    rgba(227, 200, 150, 0.32) 50%,
+    rgba(255, 255, 255, 0.03) 54%,
+    transparent 60%
+  );
+  transform: translateX(-120%);
+  pointer-events: none;
+}
+
+.gem-image:hover::after {
+  transform: translateX(120%);
+  transition: transform 0.9s cubic-bezier(0.3, 0.7, 0.4, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gem-image::after {
+    display: none;
+  }
+}

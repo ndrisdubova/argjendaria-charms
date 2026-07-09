@@ -56,6 +56,11 @@ function Home() {
     <>
       <section className="hero" style={{ backgroundImage: `url(${hero})` }}>
         <div className="hero-overlay" aria-hidden="true" />
+        <div className="hero-sparkles" aria-hidden="true">
+          {Array.from({ length: 10 }).map((_, i) => (
+            <span key={i} className={`hero-sparkle hero-sparkle-${i + 1}`} />
+          ))}
+        </div>
         <div className="container hero-inner">
           <span className="eyebrow">Est. Fine Jewelry House</span>
           <h1><span className="hero-highlight">Timeless Elegance</span>, Crafted for You</h1>

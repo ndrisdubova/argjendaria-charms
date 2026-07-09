@@ -35,19 +35,38 @@
   left: 14px;
   z-index: 2;
   padding: 6px 12px;
-  background: #c0392b;
+  background: linear-gradient(135deg, var(--wine-bright), var(--wine));
   border-radius: 999px;
   color: #ffffff;
   font-size: 0.7rem;
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
+  box-shadow: 0 6px 16px -6px var(--wine-glow), 0 0 0 1px rgba(255, 255, 255, 0.1) inset;
 }
 
 .product-detail-main-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  animation: detail-image-fade 0.45s ease both;
+}
+
+@keyframes detail-image-fade {
+  from {
+    opacity: 0;
+    transform: scale(1.02);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .product-detail-main-image img {
+    animation: none;
+  }
 }
 
 .product-detail-thumbs {
@@ -65,22 +84,29 @@
   border: 1px solid var(--line);
   padding: 0;
   opacity: 0.6;
-  transition: opacity 0.25s ease, border-color 0.25s ease;
+  transition: opacity 0.25s ease, border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .product-detail-thumb img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform 0.4s ease;
 }
 
 .product-detail-thumb:hover {
-  opacity: 0.85;
+  opacity: 0.9;
+  transform: translateY(-2px);
+}
+
+.product-detail-thumb:hover img {
+  transform: scale(1.08);
 }
 
 .product-detail-thumb-active {
   opacity: 1;
   border-color: var(--gold-bright);
+  box-shadow: 0 0 0 1px var(--gold-dim), 0 6px 14px -6px var(--gold-dim);
 }
 
 .product-detail-info {

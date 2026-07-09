@@ -156,7 +156,7 @@ function ProductDetail() {
           <div className="product-detail-media">
             <div className="product-detail-main-image">
               {hasDiscount && <span className="product-discount-badge">{discountPercent}% Off</span>}
-              <img src={shown} alt={product.name} />
+              <img key={shown} src={shown} alt={product.name} />
             </div>
 
             {gallery.length > 0 && (
