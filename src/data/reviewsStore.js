@@ -9,11 +9,18 @@ function mapRow(row) {
   return { id: row.id, name: row.name, rating: row.rating, text: row.text, date: row.created_at }
 }
 
+let cachedReviews = null
+
+export function getCachedReviews() {
+  return cachedReviews
+}
+
 export async function loadReviews() {
   return dedupe('reviews', async () => {
     const { data, error } = await supabase.from('reviews').select('*').order('created_at')
     if (error) throw error
-    return data.map(mapRow)
+    cachedReviews = data.map(mapRow)
+    return cachedReviews
   })
 }
 

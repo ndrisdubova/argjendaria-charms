@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from 'react'
-import { loadHolidays, setHolidayEnabled, setHolidayProductIds, subscribe, HOLIDAY_DEFS } from '../data/holidaysStore'
+import { loadHolidays, setHolidayEnabled, setHolidayProductIds, subscribe, HOLIDAY_DEFS, getCachedHolidays } from '../data/holidaysStore'
 
 export function useHolidays() {
-  const [holidays, setHolidays] = useState({})
+  const [holidays, setHolidays] = useState(() => getCachedHolidays() || {})
 
   const refresh = useCallback(() => {
     loadHolidays().then(setHolidays)

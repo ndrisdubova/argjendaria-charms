@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from 'react'
-import { loadDiscounts, setDiscount as setDiscountApi, removeDiscount as removeDiscountApi, subscribe } from '../data/discountsStore'
+import { loadDiscounts, setDiscount as setDiscountApi, removeDiscount as removeDiscountApi, subscribe, getCachedDiscounts } from '../data/discountsStore'
 
 export function useDiscounts() {
-  const [discounts, setDiscounts] = useState({})
+  const [discounts, setDiscounts] = useState(() => getCachedDiscounts() || {})
 
   const refresh = useCallback(() => {
     loadDiscounts().then(setDiscounts)

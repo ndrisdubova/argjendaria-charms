@@ -19,6 +19,12 @@ function defaultHolidays() {
   }, {})
 }
 
+let cachedHolidays = null
+
+export function getCachedHolidays() {
+  return cachedHolidays
+}
+
 export async function loadHolidays() {
   return dedupe('holidays', async () => {
     const { data, error } = await supabase.from('holidays').select('*')
@@ -27,7 +33,8 @@ export async function loadHolidays() {
     data.forEach((row) => {
       map[row.key] = { enabled: row.enabled, productIds: row.product_ids || [] }
     })
-    return map
+    cachedHolidays = map
+    return cachedHolidays
   })
 }
 

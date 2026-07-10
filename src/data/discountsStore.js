@@ -5,6 +5,12 @@ import { dedupe } from './dedupe'
 const { notify, subscribe } = createBroadcaster('charms-discounts-updated')
 export { subscribe }
 
+let cachedDiscounts = null
+
+export function getCachedDiscounts() {
+  return cachedDiscounts
+}
+
 export async function loadDiscounts() {
   return dedupe('discounts', async () => {
     const { data, error } = await supabase.from('discounts').select('product_id, percent')
@@ -13,7 +19,8 @@ export async function loadDiscounts() {
     data.forEach((row) => {
       map[row.product_id] = row.percent
     })
-    return map
+    cachedDiscounts = map
+    return cachedDiscounts
   })
 }
 

@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from 'react'
-import { loadReviews, addReview as addReviewApi, updateReview as updateReviewApi, deleteReview as deleteReviewApi, subscribe } from '../data/reviewsStore'
+import { loadReviews, addReview as addReviewApi, updateReview as updateReviewApi, deleteReview as deleteReviewApi, subscribe, getCachedReviews } from '../data/reviewsStore'
 
 export function useReviews() {
-  const [reviews, setReviews] = useState([])
+  const [reviews, setReviews] = useState(() => getCachedReviews() || [])
 
   const refresh = useCallback(() => {
     loadReviews().then(setReviews)
