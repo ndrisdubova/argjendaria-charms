@@ -345,6 +345,15 @@
   padding: 28px;
 }
 
+.admin-error-banner {
+  margin-bottom: 20px;
+  padding: 16px 20px;
+  border-color: rgba(200, 60, 60, 0.5);
+  background: rgba(200, 60, 60, 0.08);
+  color: #e88;
+  font-size: 0.9rem;
+}
+
 .admin-panel h2 {
   display: flex;
   align-items: center;

@@ -1,11 +1,20 @@
 import { useCallback, useEffect, useState } from 'react'
-import { loadHolidays, setHolidayEnabled, setHolidayProductIds, subscribe, HOLIDAY_DEFS, getCachedHolidays } from '../data/holidaysStore'
+import { loadHolidays, setHolidayEnabled, setHolidayProductIds, subscribe, HOLIDAY_DEFS, getCachedHolidays, defaultHolidays } from '../data/holidaysStore'
 
 export function useHolidays() {
-  const [holidays, setHolidays] = useState(() => getCachedHolidays() || {})
+  const [holidays, setHolidays] = useState(() => getCachedHolidays() || defaultHolidays())
+  const [error, setError] = useState(null)
 
   const refresh = useCallback(() => {
-    loadHolidays().then(setHolidays)
+    loadHolidays()
+      .then((data) => {
+        setHolidays(data)
+        setError(null)
+      })
+      .catch((err) => {
+        console.error('Failed to load holidays:', err)
+        setError(err)
+      })
   }, [])
 
   useEffect(() => {
@@ -13,27 +22,34 @@ export function useHolidays() {
     return subscribe(refresh)
   }, [refresh])
 
+  const withErrorHandling = useCallback((promise) => {
+    return Promise.resolve(promise).catch((err) => {
+      console.error('Failed to update holiday:', err)
+      setError(err)
+    })
+  }, [])
+
   const toggleHoliday = useCallback(
-    (key) => setHolidayEnabled(key, !holidays[key]?.enabled),
-    [holidays],
+    (key) => withErrorHandling(setHolidayEnabled(key, !holidays[key]?.enabled)),
+    [holidays, withErrorHandling],
   )
 
   const addProductToHoliday = useCallback(
     (key, productId) => {
       const ids = holidays[key]?.productIds || []
       if (ids.includes(productId)) return Promise.resolve()
-      return setHolidayProductIds(key, [...ids, productId])
+      return withErrorHandling(setHolidayProductIds(key, [...ids, productId]))
     },
-    [holidays],
+    [holidays, withErrorHandling],
   )
 
   const removeProductFromHoliday = useCallback(
     (key, productId) => {
       const ids = holidays[key]?.productIds || []
-      return setHolidayProductIds(key, ids.filter((id) => id !== productId))
+      return withErrorHandling(setHolidayProductIds(key, ids.filter((id) => id !== productId)))
     },
-    [holidays],
+    [holidays, withErrorHandling],
   )
 
-  return { holidays, toggleHoliday, addProductToHoliday, removeProductFromHoliday, HOLIDAY_DEFS }
+  return { holidays, error, toggleHoliday, addProductToHoliday, removeProductFromHoliday, HOLIDAY_DEFS }
 }

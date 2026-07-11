@@ -12,7 +12,7 @@ export const HOLIDAY_DEFS = [
   { key: 'mothersday', label: "Mother's Day" },
 ]
 
-function defaultHolidays() {
+export function defaultHolidays() {
   return HOLIDAY_DEFS.reduce((acc, h) => {
     acc[h.key] = { enabled: false, productIds: [] }
     return acc

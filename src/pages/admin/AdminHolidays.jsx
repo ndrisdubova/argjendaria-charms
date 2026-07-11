@@ -81,7 +81,7 @@ function HolidayCard({ holidayKey, label, holiday, products, onToggle, onAdd, on
 }
 
 function AdminHolidays() {
-  const { holidays, toggleHoliday, addProductToHoliday, removeProductFromHoliday, HOLIDAY_DEFS } = useHolidays()
+  const { holidays, error, toggleHoliday, addProductToHoliday, removeProductFromHoliday, HOLIDAY_DEFS } = useHolidays()
   const { products } = useProducts()
 
   return (
@@ -90,6 +90,12 @@ function AdminHolidays() {
         <h1>Holiday Collections</h1>
         <p>Toggle a holiday on to feature it on the homepage, and choose which pieces belong to it.</p>
       </div>
+
+      {error && (
+        <div className="admin-panel admin-error-banner" role="alert">
+          Couldn’t reach the holidays database. Your changes may not have saved — please try again.
+        </div>
+      )}
 
       <div className="holiday-cards">
         {HOLIDAY_DEFS.map(({ key, label }) => (
