@@ -63,7 +63,7 @@ function Cart() {
             <div className="cart-lines">
               {lines.map((line) => (
                 <div className="cart-line" key={`${line.productId}-${line.size || ''}-${personalizationKey(line.personalization)}`}>
-                  <img src={resolveProductImage(line.product)} alt={line.product.name} className="cart-line-image" />
+                  <img src={resolveProductImage(line.product)} alt={line.product.name} className="cart-line-image" loading="lazy" />
                   <div className="cart-line-info">
                     <Link to={`/products/${line.product.id}`} className="cart-line-name">{line.product.name}</Link>
                     <span className="cart-line-material">{line.product.material}</span>

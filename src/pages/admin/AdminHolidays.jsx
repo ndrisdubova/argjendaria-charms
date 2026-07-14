@@ -64,7 +64,7 @@ function HolidayCard({ holidayKey, label, holiday, products, onToggle, onAdd, on
         <ul className="holiday-product-list">
           {assignedProducts.map((p) => (
             <li key={p.id}>
-              <img src={resolveProductImage(p)} alt="" className="admin-table-thumb" />
+              <img src={resolveProductImage(p)} alt="" className="admin-table-thumb" loading="lazy" />
               <span className="holiday-product-name">{p.name}</span>
               <button type="button" className="admin-link-btn admin-link-danger" onClick={() => onRemove(holidayKey, p.id)}>
                 <X size={13} strokeWidth={1.75} />

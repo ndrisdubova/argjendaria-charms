@@ -57,7 +57,7 @@ function AdminBlog() {
             {sorted.map((p) => (
               <tr key={p.id}>
                 <td>
-                  <img className="admin-table-thumb" src={p.image} alt="" />
+                  <img className="admin-table-thumb" src={p.image} alt="" loading="lazy" />
                 </td>
                 <td>{p.title}</td>
                 <td>{p.author}</td>

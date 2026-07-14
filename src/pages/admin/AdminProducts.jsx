@@ -76,7 +76,7 @@ function AdminProducts() {
             {products.map((p) => (
               <tr key={p.id}>
                 <td>
-                  <img className="admin-table-thumb" src={resolveProductImage(p)} alt="" />
+                  <img className="admin-table-thumb" src={resolveProductImage(p)} alt="" loading="lazy" />
                 </td>
                 <td>{p.name}</td>
                 <td>{p.category}</td>
