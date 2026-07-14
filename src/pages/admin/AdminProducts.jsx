@@ -9,20 +9,32 @@ function AdminProducts() {
   const { products, addProduct, updateProduct, deleteProduct } = useProducts()
   const [editing, setEditing] = useState(null)
   const [adding, setAdding] = useState(false)
+  const [saveError, setSaveError] = useState('')
 
-  const handleDelete = (product) => {
-    if (window.confirm(`Delete "${product.name}"? This cannot be undone.`)) {
-      deleteProduct(product.id)
+  const handleDelete = async (product) => {
+    if (!window.confirm(`Delete "${product.name}"? This cannot be undone.`)) return
+    try {
+      setSaveError('')
+      await deleteProduct(product.id)
+    } catch (err) {
+      console.error('Failed to delete product:', err)
+      setSaveError(err.message || 'Could not delete that piece. Please try again.')
     }
   }
 
-  const handleSave = (data) => {
-    if (editing) {
-      updateProduct(editing.id, data)
-      setEditing(null)
-    } else {
-      addProduct(data)
-      setAdding(false)
+  const handleSave = async (data) => {
+    try {
+      setSaveError('')
+      if (editing) {
+        await updateProduct(editing.id, data)
+        setEditing(null)
+      } else {
+        await addProduct(data)
+        setAdding(false)
+      }
+    } catch (err) {
+      console.error('Failed to save product:', err)
+      setSaveError(err.message || 'Could not save that piece. Please try again.')
     }
   }
 
@@ -38,6 +50,12 @@ function AdminProducts() {
           Add Piece
         </button>
       </div>
+
+      {saveError && (
+        <div className="admin-panel admin-error-banner" role="alert">
+          {saveError}
+        </div>
+      )}
 
       <div className="admin-table-wrap">
         <table className="admin-table">
