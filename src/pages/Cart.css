@@ -347,3 +347,16 @@
     grid-template-columns: 1fr;
   }
 }
+
+.cart-line-engraving {
+  font-size: 0.78rem;
+  color: var(--gold);
+}
+
+.cart-summary-engraving {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.75rem;
+  font-style: normal;
+  color: var(--gold);
+}

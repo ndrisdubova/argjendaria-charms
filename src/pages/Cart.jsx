@@ -5,6 +5,7 @@ import { useAuth } from '../hooks/useAuth'
 import { useProducts } from '../hooks/useProducts'
 import { resolveProductImage } from '../data/images'
 import { getStock } from '../data/productsStore'
+import { describePersonalization, personalizationKey } from '../data/personalization'
 import '../components/ProductCard.css'
 import './Products.css'
 import './Cart.css'
@@ -61,18 +62,23 @@ function Cart() {
           <div className="cart-layout">
             <div className="cart-lines">
               {lines.map((line) => (
-                <div className="cart-line" key={`${line.productId}-${line.size || ''}`}>
+                <div className="cart-line" key={`${line.productId}-${line.size || ''}-${personalizationKey(line.personalization)}`}>
                   <img src={resolveProductImage(line.product)} alt={line.product.name} className="cart-line-image" />
                   <div className="cart-line-info">
                     <Link to={`/products/${line.product.id}`} className="cart-line-name">{line.product.name}</Link>
                     <span className="cart-line-material">{line.product.material}</span>
                     {line.size && <span className="cart-line-size">Size {line.size}</span>}
+                    {line.personalization && (
+                      <span className="cart-line-engraving">
+                        Engraved: {describePersonalization(line.personalization)}
+                      </span>
+                    )}
                     <span className="cart-line-price">${line.unitPrice.toLocaleString()} each</span>
                   </div>
                   <div className="qty-stepper">
                     <button
                       type="button"
-                      onClick={() => updateQuantity(line.productId, line.size, line.quantity - 1)}
+                      onClick={() => updateQuantity(line.productId, line.size, line.quantity - 1, line.personalization)}
                       aria-label="Decrease quantity"
                     >
                       <Minus size={13} strokeWidth={2} />
@@ -80,7 +86,7 @@ function Cart() {
                     <span>{line.quantity}</span>
                     <button
                       type="button"
-                      onClick={() => updateQuantity(line.productId, line.size, Math.min(line.maxForLine, line.quantity + 1))}
+                      onClick={() => updateQuantity(line.productId, line.size, Math.min(line.maxForLine, line.quantity + 1), line.personalization)}
                       disabled={line.quantity >= line.maxForLine}
                       aria-label="Increase quantity"
                     >
@@ -91,7 +97,7 @@ function Cart() {
                   <button
                     type="button"
                     className="cart-line-remove"
-                    onClick={() => removeFromCart(line.productId, line.size)}
+                    onClick={() => removeFromCart(line.productId, line.size, line.personalization)}
                     aria-label={`Remove ${line.product.name}`}
                   >
                     <Trash2 size={16} strokeWidth={1.75} />

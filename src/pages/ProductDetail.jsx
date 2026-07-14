@@ -11,6 +11,13 @@ import { useDiscounts } from '../hooks/useDiscounts'
 import { resolveProductImage } from '../data/images'
 import { getStock } from '../data/productsStore'
 import { getDiscountedPrice, formatDiscountedPrice } from '../data/discountsStore'
+import {
+  FONT_OPTIONS,
+  DEFAULT_FONT,
+  MAX_PERSONALIZATION_LENGTH,
+  fontStack,
+  cleanPersonalization,
+} from '../data/personalization'
 import NotFound from './NotFound'
 import '../components/ProductCard.css'
 import '../pages/Contact.css'
@@ -37,6 +44,8 @@ function ProductDetail() {
   const [successPhase, setSuccessPhase] = useState('idle')
   const [quantity, setQuantity] = useState(1)
   const [added, setAdded] = useState(false)
+  const [engravingText, setEngravingText] = useState('')
+  const [engravingFont, setEngravingFont] = useState(DEFAULT_FONT)
   const timers = useRef([])
 
   useEffect(() => {
@@ -46,6 +55,8 @@ function ProductDetail() {
     setSelectedSize(null)
     setQuantity(1)
     setAdded(false)
+    setEngravingText('')
+    setEngravingFont(DEFAULT_FONT)
     setForm(product ? { ...INITIAL_FORM, message: `I'm interested in the "${product.name}". Could you tell me more about it?` } : INITIAL_FORM)
     timers.current.forEach(clearTimeout)
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -61,6 +72,7 @@ function ProductDetail() {
   if (!product) return productsLoading ? null : <NotFound />
 
   const hasSizes = product.category === 'ring' && product.sizes && product.sizes.length > 0
+  const isPersonalizable = Boolean(product.personalizable)
   const stock = getStock(product)
   const inCartQty = quantityInCart(product.id)
   const available = Math.max(0, stock - inCartQty)
@@ -78,27 +90,45 @@ function ProductDetail() {
   const decQuantity = () => setQuantity((q) => Math.max(1, q - 1))
   const incQuantity = () => setQuantity((q) => Math.min(available, q + 1))
 
-  const validateSizeForPurchase = () => {
+  const validatePurchase = () => {
+    let ok = true
     if (hasSizes && !selectedSize) {
       setErrors((e) => ({ ...e, size: 'Please select a size.' }))
-      return false
+      ok = false
     }
-    return true
+    if (isPersonalizable && !engravingText.trim()) {
+      setErrors((e) => ({ ...e, engraving: 'Please enter the text you would like engraved.' }))
+      ok = false
+    }
+    return ok
   }
+
+  const buildPersonalization = () =>
+    isPersonalizable ? cleanPersonalization(engravingText, engravingFont) : null
 
   const handleAddToCart = () => {
     if (!isLoggedIn) return requireLoginForPurchase()
-    if (!validateSizeForPurchase()) return
-    addToCart(product.id, quantity, hasSizes ? selectedSize : null)
+    if (!validatePurchase()) return
+    addToCart(product.id, quantity, hasSizes ? selectedSize : null, buildPersonalization())
     setQuantity(1)
+    setEngravingText('')
     setAdded(true)
     setTimeout(() => setAdded(false), 1800)
   }
 
   const handleBuyNow = () => {
     if (!isLoggedIn) return requireLoginForPurchase()
-    if (!validateSizeForPurchase()) return
-    navigate('/checkout', { state: { buyNow: { productId: product.id, quantity, size: hasSizes ? selectedSize : null } } })
+    if (!validatePurchase()) return
+    navigate('/checkout', {
+      state: {
+        buyNow: {
+          productId: product.id,
+          quantity,
+          size: hasSizes ? selectedSize : null,
+          personalization: buildPersonalization(),
+        },
+      },
+    })
   }
 
   const handleChange = (e) => {
@@ -243,6 +273,65 @@ function ProductDetail() {
               <Link to="/size-guide" className="product-detail-size-link">
                 Not sure of your size? View our ring size guide &rarr;
               </Link>
+            )}
+
+            {isPersonalizable && (
+              <div className="product-personalize">
+                <span className="product-personalize-label">Make It Yours</span>
+                <p className="product-personalize-hint">
+                  Add a name, date or short message — we&apos;ll engrave it by hand.
+                </p>
+
+                <div className="form-field">
+                  <label htmlFor="engraving-text">Engraving Text</label>
+                  <input
+                    id="engraving-text"
+                    type="text"
+                    maxLength={MAX_PERSONALIZATION_LENGTH}
+                    value={engravingText}
+                    placeholder="e.g. Elira"
+                    onChange={(e) => {
+                      setEngravingText(e.target.value)
+                      setErrors((err) => ({ ...err, engraving: undefined }))
+                    }}
+                  />
+                  <span className="product-personalize-count">
+                    {engravingText.length}/{MAX_PERSONALIZATION_LENGTH}
+                  </span>
+                </div>
+
+                <div className="form-field">
+                  <label>Font</label>
+                  <div className="product-personalize-fonts">
+                    {FONT_OPTIONS.map((font) => (
+                      <button
+                        key={font.id}
+                        type="button"
+                        className={`product-personalize-font ${engravingFont === font.id ? 'product-personalize-font-active' : ''}`}
+                        style={{ fontFamily: font.stack }}
+                        onClick={() => setEngravingFont(font.id)}
+                        aria-pressed={engravingFont === font.id}
+                      >
+                        {font.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {engravingText.trim() && (
+                  <div className="product-personalize-preview">
+                    <span className="product-personalize-preview-label">Preview</span>
+                    <span
+                      className="product-personalize-preview-text"
+                      style={{ fontFamily: fontStack(engravingFont) }}
+                    >
+                      {engravingText.trim()}
+                    </span>
+                  </div>
+                )}
+
+                {errors.engraving && <span className="form-error">{errors.engraving}</span>}
+              </div>
             )}
 
             {available > 0 ? (

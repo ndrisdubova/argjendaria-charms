@@ -6,6 +6,7 @@ import { useProducts } from '../hooks/useProducts'
 import { useCart } from '../hooks/useCart'
 import { useOrders } from '../hooks/useOrders'
 import { getStock } from '../data/productsStore'
+import { describePersonalization, personalizationKey } from '../data/personalization'
 import './Contact.css'
 import './Auth.css'
 import './Products.css'
@@ -50,7 +51,9 @@ function Checkout() {
     )
   }
 
-  const rawLines = buyNow ? [{ productId: buyNow.productId, quantity: buyNow.quantity, size: buyNow.size }] : items
+  const rawLines = buyNow
+    ? [{ productId: buyNow.productId, quantity: buyNow.quantity, size: buyNow.size, personalization: buyNow.personalization || null }]
+    : items
 
   const lines = rawLines
     .map((item) => {
@@ -59,7 +62,15 @@ function Checkout() {
       const unitPrice = product.offerPrice && product.offerPrice < product.price ? product.offerPrice : product.price
       const stock = getStock(product)
       const quantity = Math.min(item.quantity, Math.max(stock, 0))
-      return { productId: product.id, productName: product.name, size: item.size || null, quantity, unitPrice, lineTotal: unitPrice * quantity }
+      return {
+        productId: product.id,
+        productName: product.name,
+        size: item.size || null,
+        personalization: item.personalization || null,
+        quantity,
+        unitPrice,
+        lineTotal: unitPrice * quantity,
+      }
     })
     .filter((l) => l && l.quantity > 0)
 
@@ -126,7 +137,14 @@ function Checkout() {
       email: form.email.trim(),
       phone: form.phone.trim(),
       address: form.address.trim(),
-      items: lines.map((l) => ({ productId: l.productId, productName: l.productName, size: l.size, quantity: l.quantity, price: l.unitPrice })),
+      items: lines.map((l) => ({
+        productId: l.productId,
+        productName: l.productName,
+        size: l.size,
+        personalization: l.personalization,
+        quantity: l.quantity,
+        price: l.unitPrice,
+      })),
     })
 
     if (!buyNow) clearCart()
@@ -182,8 +200,13 @@ function Checkout() {
           <div className="cart-summary">
             <h3>Order Summary</h3>
             {lines.map((l) => (
-              <div className="cart-summary-row" key={`${l.productId}-${l.size || ''}`}>
-                <span>{l.productName}{l.size ? ` (Size ${l.size})` : ''} × {l.quantity}</span>
+              <div className="cart-summary-row" key={`${l.productId}-${l.size || ''}-${personalizationKey(l.personalization)}`}>
+                <span>
+                  {l.productName}{l.size ? ` (Size ${l.size})` : ''} × {l.quantity}
+                  {l.personalization && (
+                    <em className="cart-summary-engraving">{describePersonalization(l.personalization)}</em>
+                  )}
+                </span>
                 <span>${l.lineTotal.toLocaleString()}</span>
               </div>
             ))}

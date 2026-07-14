@@ -295,3 +295,92 @@
     gap: 32px;
   }
 }
+
+/* Personalization */
+.product-personalize {
+  margin-top: 26px;
+  padding: 22px 24px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: rgba(212, 175, 55, 0.04);
+}
+
+.product-personalize-label {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  color: var(--gold);
+  letter-spacing: 0.02em;
+}
+
+.product-personalize-hint {
+  margin: 4px 0 18px;
+  font-size: 0.82rem;
+  color: var(--cream-dim);
+}
+
+.product-personalize .form-field {
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.product-personalize-count {
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: 0.72rem;
+  color: var(--cream-dim);
+}
+
+.product-personalize-fonts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.product-personalize-font {
+  padding: 9px 18px;
+  min-width: 92px;
+  font-size: 1rem;
+  color: var(--cream);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.product-personalize-font:hover {
+  border-color: var(--line-strong);
+}
+
+.product-personalize-font-active {
+  color: var(--gold);
+  border-color: var(--gold);
+}
+
+.product-personalize-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  padding: 18px 16px;
+  border: 1px dashed var(--line-strong);
+  border-radius: 3px;
+}
+
+.product-personalize-preview-label {
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--cream-dim);
+}
+
+.product-personalize-preview-text {
+  font-size: 1.9rem;
+  line-height: 1.35;
+  color: var(--gold-bright);
+  text-align: center;
+  word-break: break-word;
+}

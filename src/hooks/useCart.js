@@ -27,26 +27,26 @@ export function useCart() {
   }, [refresh])
 
   const addToCart = useCallback(
-    async (productId, quantity = 1, size = null) => {
+    async (productId, quantity = 1, size = null, personalization = null) => {
       if (!currentUser) return false
-      await addToCartApi(currentUser.id, productId, quantity, size)
+      await addToCartApi(currentUser.id, productId, quantity, size, personalization)
       return true
     },
     [currentUser],
   )
 
   const updateQuantity = useCallback(
-    async (productId, size, quantity) => {
+    async (productId, size, quantity, personalization = null) => {
       if (!currentUser) return
-      await updateQuantityApi(currentUser.id, productId, size, quantity)
+      await updateQuantityApi(currentUser.id, productId, size, quantity, personalization)
     },
     [currentUser],
   )
 
   const removeFromCart = useCallback(
-    async (productId, size = null) => {
+    async (productId, size = null, personalization = null) => {
       if (!currentUser) return
-      await removeFromCartApi(currentUser.id, productId, size)
+      await removeFromCartApi(currentUser.id, productId, size, personalization)
     },
     [currentUser],
   )

@@ -1753,3 +1753,32 @@
    }
  }
   
+/* Engraving on an order line */
+.admin-order-engraving {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.admin-order-engraving-tag {
+  padding: 2px 7px;
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold);
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  border-radius: 2px;
+}
+
+.admin-order-engraving-text {
+  font-size: 1.15rem;
+  color: var(--gold-bright);
+  word-break: break-word;
+}
+
+.admin-order-engraving-font {
+  font-size: 0.72rem;
+  color: var(--cream-dim);
+}

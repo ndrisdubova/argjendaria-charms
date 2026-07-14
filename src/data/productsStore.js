@@ -17,6 +17,7 @@ const FIELD_MAP = {
   gallery: 'gallery',
   sizes: 'sizes',
   stock: 'stock',
+  personalizable: 'personalizable',
 }
 
 function toPatch(fields) {
@@ -42,6 +43,7 @@ function mapRow(row) {
     gallery: row.gallery || [],
     sizes: row.sizes || [],
     stock: row.stock,
+    personalizable: row.personalizable ?? false,
     createdAt: row.created_at,
   }
 }

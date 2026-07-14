@@ -15,6 +15,7 @@ const EMPTY = {
   material: '',
   description: '',
   featured: false,
+  personalizable: false,
   image: '',
   gallery: [],
   sizes: [],
@@ -218,6 +219,11 @@ function ProductForm({ initial, onSave, onClose }) {
         <label className="admin-checkbox">
           <input type="checkbox" name="featured" checked={form.featured} onChange={handleChange} />
           Feature on homepage
+        </label>
+
+        <label className="admin-checkbox">
+          <input type="checkbox" name="personalizable" checked={form.personalizable} onChange={handleChange} />
+          Personalizable — let customers choose engraving text and font
         </label>
 
         {error && <span className="form-error">{error}</span>}

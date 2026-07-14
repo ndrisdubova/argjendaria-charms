@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { Mail, Phone, MapPin, Trash2, PackageCheck, PackageOpen } from 'lucide-react'
 import { useOrders } from '../../hooks/useOrders'
 import { ORDER_STATUSES, ORDER_STATUS_LABELS } from '../../data/ordersStore'
+import { fontStack, fontLabel, personalizationKey } from '../../data/personalization'
 
 function formatDate(iso) {
   return new Date(iso).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })
@@ -59,8 +60,22 @@ function AdminOrders() {
 
             <ul className="admin-order-items">
               {order.items.map((item) => (
-                <li key={`${item.productId}-${item.size || ''}`}>
-                  <span>{item.productName}{item.size ? ` (Size ${item.size})` : ''} × {item.quantity}</span>
+                <li key={`${item.productId}-${item.size || ''}-${personalizationKey(item.personalization)}`}>
+                  <span>
+                    {item.productName}{item.size ? ` (Size ${item.size})` : ''} × {item.quantity}
+                    {item.personalization && (
+                      <span className="admin-order-engraving">
+                        <span className="admin-order-engraving-tag">Engrave</span>
+                        <span
+                          className="admin-order-engraving-text"
+                          style={{ fontFamily: fontStack(item.personalization.font) }}
+                        >
+                          {item.personalization.text}
+                        </span>
+                        <span className="admin-order-engraving-font">{fontLabel(item.personalization.font)}</span>
+                      </span>
+                    )}
+                  </span>
                   <span>${(item.price * item.quantity).toLocaleString()}</span>
                 </li>
               ))}
